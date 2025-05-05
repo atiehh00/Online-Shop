@@ -1,0 +1,1553 @@
+{% comment %} Version: 1.0.1 {% endcomment %}
+
+{% comment %}
+  ---------------------------------------------------------
+  Copyright © 2024 Sternify. All rights reserved.
+  Any unauthorized reproduction, alteration, or distribution
+  of this code, in part or in whole, is expressly forbidden.
+  Violators will be subject to legal prosecution to the maximum
+  extent permitted by law. For permissions or inquiries,
+  please contact us in our discord server: https://discord.gg/NHHCEPhsG8
+  ---------------------------------------------------------
+{% endcomment %}
+
+<script
+  src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/verifier.js"
+  data-section-id="{{ section.id }}"
+  defer
+></script>
+
+<div class="st_not-found"></div>
+
+<style>
+  /* Main container */
+  .st_media-and-content-outer--{{ section.id }} {
+    width: 100%;
+    background-color: {{ section.settings.section_background_color }};
+    padding-left: 15px;
+    padding-right: 15px;
+    {% if section.settings.box_enabled %}
+      padding-top: {{ section.settings.space_from_top }}px;
+      padding-bottom: {{ section.settings.space_from_bottom }}px;
+    {% else %}
+      padding-top: 0;
+      padding-bottom: 0;
+    {% endif %}
+  }
+
+  .st_media-and-content-wrapper--{{ section.id }} {
+    max-width: {{ section.settings.section_max_width }}px;
+    width: 100%;
+    margin: 0 auto;
+    {% if section.settings.box_enabled == false %}
+      padding-top: {{ section.settings.space_from_top }}px;
+      padding-bottom: {{ section.settings.space_from_bottom }}px;
+    {% endif %}
+  }
+
+  .st_media-and-content-wrapper--{{ section.id }} .st_media-and-content-content-wrapper {
+    display: flex;
+    {% if section.settings.desktop_layout == 'media_left' %}
+    flex-direction: row-reverse;
+    {% else %}
+    flex-direction: row;
+    {% endif %}
+
+    {% if section.settings.box_enabled %}
+      background-color: {{ section.settings.background_color }};
+      border-radius: {{ section.settings.border_radius }}px;
+      overflow: hidden;
+    {% endif %}
+  }
+
+  /* Content section */
+  .st_media-and-content-content {
+    flex: 0 0 50%;
+    padding: {{ section.settings.content_padding }}px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: {{ section.settings.content_gap }}px;
+  }
+
+  /* Media section */
+  .st_media-and-content-media {
+    flex: 0 0 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    {% if section.settings.box_enabled == false %}
+      border-radius: {{ section.settings.border_radius }}px;
+    {% endif %}
+  }
+
+  .st_media-and-content-media-element {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Title blocks */
+  {% for block in section.blocks %}
+    {% if block.type == 'title' %}
+      {{ block.settings.title_font | font_face: font_display: 'swap' }}
+
+      .st_media-and-content-title--{{ block.id }}, .st_media-and-content-title--{{ block.id }} .highlight {
+        font-size: {{ block.settings.title_size }}px;
+        line-height: {{ block.settings.title_line_height }};
+        color: {{ block.settings.title_color }};
+        margin: 0; /* Remove margin since we're using flex gap */
+        {% if block.settings.title_font %}
+          font-family: {{ block.settings.title_font.family }}, {{ block.settings.title_font.fallback_families }};
+          font-weight: {{ block.settings.title_font.weight }};
+        {% endif %}
+      }
+
+      .st_media-and-content-title--{{ block.id }} .highlight {
+        color: {{ block.settings.highlight_color }} !important;
+        display: inline; /* Make div behave like inline element */
+      }
+
+      @media screen and (max-width: 768px) {
+        .st_media-and-content-title--{{ block.id }}, .st_media-and-content-title--{{ block.id }} .highlight {
+          font-size: {{ block.settings.mobile_title_size }}px;
+        }
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Description blocks */
+  {% for block in section.blocks %}
+    {% if block.type == 'description' and block.settings.description != blank %}
+      {{ block.settings.description_font | font_face: font_display: 'swap' }}
+
+      .st_media-and-content-description--{{ block.id }} {
+        font-size: {{ block.settings.description_size }}px;
+        {% if block.settings.description_font %}
+          font-family: {{ block.settings.description_font.family }}, {{ block.settings.description_font.fallback_families }};
+          font-weight: {{ block.settings.description_font.weight }};
+        {% endif %}
+      }
+
+      .st_media-and-content-description--{{ block.id }} p {
+        line-height: {{ block.settings.description_line_height }};
+        margin: 0;
+        font-family: {{ block.settings.description_font.family }}, {{ block.settings.description_font.fallback_families }};
+        font-weight: {{ block.settings.description_font.weight }};
+        color: {{ block.settings.description_color }};
+      }
+
+      .st_media-and-content-description--{{ block.id }} p:empty {
+        display: block;
+        height: 20px;
+      }
+
+      @media screen and (max-width: 768px) {
+        .st_media-and-content-description--{{ block.id }} {
+          font-size: {{ block.settings.mobile_description_size }}px;
+        }
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Features container */
+  .st_media-and-content-features-container {
+    list-style: none !important;
+    margin: 0; /* Remove margin since we're using flex gap */
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Gap between list items */
+  }
+
+  /* Check item blocks - now renamed to Icon and Text */
+  {% for block in section.blocks %}
+    {% if block.type == 'icon_and_text' %}
+      {{ block.settings.feature_font | font_face: font_display: 'swap' }}
+
+      .st_media-and-content-feature-item--{{ block.id }} {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        font-size: {{ block.settings.feature_size }}px;
+        color: {{ block.settings.feature_color }};
+        {% if block.settings.feature_font %}
+          font-family: {{ block.settings.feature_font.family }}, {{ block.settings.feature_font.fallback_families }};
+          font-weight: {{ block.settings.feature_font.weight }};
+        {% endif %}
+      }
+
+      .st_media-and-content-check-icon--{{ block.id }} {
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
+
+      .st_media-and-content-check-icon--{{ block.id }} img {
+        width: 100%;
+        height: {{ block.settings.icon_size }}px;
+        object-fit: contain;
+        opacity: {{ block.settings.icon_opacity }};
+        flex-shrink: 0;
+      }
+
+      .st_media-and-content-check-icon--{{ block.id }} svg {
+        width: {{ block.settings.icon_size }}px;
+        height: {{ block.settings.icon_size }}px;
+        fill: {{ block.settings.icon_color }};
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Icon blocks */
+  {% for block in section.blocks %}
+    {% if block.type == 'icon' %}
+      .st_media-and-content-icon--{{ block.id }} {
+        display: flex;
+        justify-content: {{ block.settings.icon_alignment }};
+        margin: 0;
+      }
+
+      .st_media-and-content-icon--{{ block.id }} img {
+        width: auto;
+        height: {{ block.settings.icon_size }}px;
+        object-fit: contain;
+        opacity: {{ block.settings.icon_opacity }};
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Icon Grid blocks */
+  {% for block in section.blocks %}
+    {% if block.type == 'icon_grid' %}
+      {{ block.settings.feature_font | font_face: font_display: 'swap' }}
+
+      .st_media-and-content-icon-grid--{{ block.id }} {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+        margin: 0;
+      }
+
+      .st_media-and-content-icon-grid-item {
+        display: flex;
+        align-items: center;
+        font-size: {{ block.settings.feature_size }}px;
+        color: {{ block.settings.feature_color }};
+        {% if block.settings.feature_font %}
+          font-family: {{ block.settings.feature_font.family }}, {{ block.settings.feature_font.fallback_families }};
+          font-weight: {{ block.settings.feature_font.weight }};
+        {% endif %}
+      }
+
+      .st_media-and-content-icon-grid-icon {
+        width: {{ block.settings.icon_size }}px;
+        height: {{ block.settings.icon_size }}px;
+        margin-right: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .st_media-and-content-icon-grid-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        opacity: {{ block.settings.icon_opacity }};
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Button blocks */
+  {% for block in section.blocks %}
+    {% if block.type == 'button' %}
+      {{ block.settings.button_font | font_face: font_display: 'swap' }}
+
+      .st_media-and-content-button--{{ block.id }} {
+        display: inline-block;
+        padding: {{ block.settings.button_padding_vertical }}px {{ block.settings.button_padding_horizontal }}px;
+        background-color: {{ block.settings.button_background }} !important;
+        color: {{ block.settings.button_text_color }} !important;
+        text-decoration: none;
+        border-radius: {{ block.settings.button_border_radius }}px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin: 0; /* Remove margin since we're using flex gap */
+        border: {{ block.settings.button_border_width }}px solid {{ block.settings.button_border_color }};
+        font-size: {{ block.settings.button_font_size }}px;
+        width: fit-content;
+        {% if block.settings.button_font %}
+          font-family: {{ block.settings.button_font.family }}, {{ block.settings.button_font.fallback_families }};
+          font-weight: {{ block.settings.button_font.weight }};
+        {% endif %}
+      }
+
+      .st_media-and-content-button--{{ block.id }}:hover {
+        background-color: {{ block.settings.button_hover_background }} !important;
+        color: {{ block.settings.button_hover_text_color }} !important;
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Social Proof block styles */
+  {% for block in section.blocks %}
+    {% if block.type == 'social_proof' %}
+      {{ block.settings.testimonial_font | font_face }}
+      {{ block.settings.name_font | font_face }}
+
+      .st_media-and-content-social_proof-{{ block.id }} {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        background-color: {{ block.settings.background_color }};
+        border-radius: {{ block.settings.border_radius }}px;
+        padding: {{ block.settings.padding }}px;
+        width: 100%;
+        max-width: 600px;
+        {% if block.settings.show_border %}
+          border: 1px solid {{ block.settings.border_color }};
+        {% endif %}
+      }
+
+      .st_media-and-content-social_proof_avatar {
+        flex-shrink: 0;
+      }
+
+      .st_media-and-content-social_proof_avatar_img {
+        width: {{ block.settings.avatar_size }}px;
+        height: {{ block.settings.avatar_size }}px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .st_media-and-content-social_proof_avatar_placeholder {
+        width: {{ block.settings.avatar_size }}px;
+        height: {{ block.settings.avatar_size }}px;
+        border-radius: 50%;
+        background-color: #E0E0E0;
+      }
+
+      .st_media-and-content-social_proof_content {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        flex: 1;
+      }
+
+      .st_media-and-content-social_proof_testimonial {
+        font-family: {{ block.settings.testimonial_font.family }}, {{ block.settings.testimonial_font.fallback_families }};
+        font-size: {{ block.settings.testimonial_size }}px;
+        color: {{ block.settings.testimonial_color }};
+        font-weight: {{ block.settings.testimonial_font.weight }};
+        line-height: 1.4;
+      }
+
+      .st_media-and-content-social_proof_testimonial p {
+        margin: 0;
+        font-family: inherit;
+        font-size: inherit;
+        color: inherit;
+        font-weight: inherit;
+        line-height: inherit;
+      }
+
+      .st_media-and-content-social_proof_testimonial strong {
+        font-weight: bold;
+      }
+
+      .st_media-and-content-social_proof_testimonial em {
+        font-style: italic;
+      }
+
+      .st_media-and-content-social_proof_footer {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .st_media-and-content-social_proof_rating-{{ block.id }} {
+        display: flex;
+        gap: 2px;
+      }
+
+      .social-proof-rating-{{ block.id }} {
+        width: calc({{ block.settings.star_size }}px * 5.5);
+        max-height: {{ block.settings.star_size }}px;
+      }
+
+      .social-proof-rating__background-{{ block.id }} {
+        fill: {{ block.settings.star_color_background }};
+        stroke: none;
+        stroke-width: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      .social-proof-rating__value-{{ block.id }} {
+        fill: {{ block.settings.star_color }};
+        height: 100%;
+      }
+
+      .st_media-and-content-social_proof_customer_name {
+        font-family: {{ block.settings.name_font.family }}, {{ block.settings.name_font.fallback_families }};
+        font-size: {{ block.settings.name_size }}px;
+        color: {{ block.settings.name_color }};
+        font-weight: {{ block.settings.name_font.weight }};
+      }
+
+      @media screen and (max-width: 600px) {
+        .st_media-and-content-social_proof-{{ block.id }} {
+          padding: calc({{ block.settings.padding }}px * 0.8);
+        }
+
+        .st_media-and-content-social_proof_avatar_img,
+        .st_media-and-content-social_proof_avatar_placeholder {
+          width: calc({{ block.settings.avatar_size }}px * 0.8);
+          height: calc({{ block.settings.avatar_size }}px * 0.8);
+        }
+
+        .st_media-and-content-social_proof_testimonial {
+          font-size: calc({{ block.settings.testimonial_size }}px * 0.9);
+        }
+
+        .social-proof-rating-{{ block.id }} {
+          width: calc({{ block.settings.star_size }}px * 5.5 * 0.9);
+          max-height: calc({{ block.settings.star_size }}px * 0.9);
+        }
+
+        .st_media-and-content-social_proof_customer_name {
+          font-size: calc({{ block.settings.name_size }}px * 0.9);
+        }
+      }
+    {% endif %}
+  {% endfor %}
+
+  /* Responsive adjustments */
+  @media screen and (max-width: 768px) {
+    .st_media-and-content-outer--{{ section.id }} {
+      {% if section.settings.box_enabled %}
+        padding-top: {{ section.settings.space_from_top | times: 0.75 | round }}px;
+        padding-bottom: {{ section.settings.space_from_bottom | times: 0.75 | round }}px;
+        padding-inline: 0px;
+      {% else %}
+        padding-inline: 0px;
+        padding-top: 0;
+        padding-bottom: 0;
+      {% endif %}
+    }
+
+    .st_media-and-content-wrapper--{{ section.id }} .st_media-and-content-content-wrapper {
+      flex-direction: column;
+      {% if section.settings.box_enabled %}
+        background-color: {{ section.settings.background_color }};
+        border-radius: 0;
+      {% endif %}
+    }
+
+    .st_media-and-content-wrapper--{{ section.id }} {
+      {% if section.settings.box_enabled == false %}
+        padding-top: {{ section.settings.space_from_top | times: 0.75 | round }}px;
+        padding-bottom: {{ section.settings.space_from_bottom | times: 0.75 | round }}px;
+      {% endif %}
+    }
+
+    .st_media-and-content-wrapper--{{ section.id }} .st_media-and-content-content {
+      padding: {{ section.settings.content_padding | times: 0.50 | round }}px;
+      order: {% if section.settings.mobile_layout == 'media_top' %}2{% else %}1{% endif %};
+      gap: {{ section.settings.content_gap | times: 0.75 | round }}px;
+      flex: 1 1 auto;
+    }
+
+    .st_media-and-content-wrapper--{{ section.id }} .st_media-and-content-media {
+      order: {% if section.settings.mobile_layout == 'media_top' %}1{% else %}2{% endif %};
+      flex: 1 1 auto;
+      {% if section.settings.box_enabled == false %}
+        border-radius: 0;
+        margin-bottom: {{ section.settings.content_gap | times: 0.75 | round }}px;
+      {% endif %}
+    }
+  }
+
+  .st_media-and-content-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+</style>
+
+<div class="st_wrapper st_check-section--{{ section.id }}">
+  <div class="st_media-and-content-outer st_media-and-content-outer--{{ section.id }}">
+    <div class="st_media-and-content-wrapper st_media-and-content-wrapper--{{ section.id }}">
+      <div class="st_media-and-content-content-wrapper">
+        <div class="st_media-and-content-content">
+          {% assign in_list = false %}
+
+          {% for block in section.blocks %}
+            {% comment %}Close list if needed when changing block types{% endcomment %}
+            {% if in_list and block.type != 'icon_and_text' %}
+              </ul>
+              {% assign in_list = false %}
+            {% endif %}
+
+            {% case block.type %}
+              {% when 'title' %}
+                {% if block.settings.heading_text != blank %}
+                  <h2
+                    class="st_media-and-content-title st_media-and-content-title--{{ block.id }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{ block.settings.heading_text | replace: '[', '<div class="highlight">' | replace: ']', '</div>' }}
+                  </h2>
+                {% endif %}
+
+              {% when 'description' %}
+                {% if block.settings.description != blank %}
+                  <div
+                    class="st_media-and-content-description st_media-and-content-description--{{ block.id }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    {{ block.settings.description }}
+                  </div>
+                {% endif %}
+
+              {% when 'icon_and_text' %}
+                {% if block.settings.feature_text != blank %}
+                  {% unless in_list %}
+                    <ul class="st_media-and-content-features-container">
+                      {% assign in_list = true %}
+                  {% endunless %}
+
+                  <li class="st_media-and-content-feature-item--{{ block.id }}" {{ block.shopify_attributes }}>
+                    <div class="st_media-and-content-check-icon st_media-and-content-check-icon--{{ block.id }}">
+                      {% if block.settings.icon != blank %}
+                        <img
+                          src="{{ block.settings.icon | image_url: width: 50 }}"
+                          width="50"
+                          height="50"
+                          alt=""
+                          loading="lazy"
+                        >
+                      {% else %}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" viewBox="0 0 23 23" fill="none">
+                          <path d="M19 11C19 14.866 15.866 18 12 18C8.13401 18 5 14.866 5 11C5 7.13401 8.13401 4 12 4C15.866 4 19 7.13401 19 11Z" fill="{{ block.settings.icon_color }}"/>
+                          <path d="M11.5 0C9.22552 0 7.00211 0.674463 5.11095 1.9381C3.21978 3.20173 1.7458 4.99779 0.87539 7.09914C0.00498277 9.20049 -0.222756 11.5128 0.220974 13.7435C0.664704 15.9743 1.75997 18.0234 3.36828 19.6317C4.97658 21.24 7.02568 22.3353 9.25646 22.779C11.4872 23.2228 13.7995 22.995 15.9009 22.1246C18.0022 21.2542 19.7983 19.7802 21.0619 17.8891C22.3255 15.9979 23 13.7745 23 11.5C22.9968 8.451 21.7841 5.5278 19.6282 3.37183C17.4722 1.21586 14.549 0.0032198 11.5 0ZM16.5489 9.47202L10.3566 15.6643C10.2745 15.7466 10.1769 15.8118 10.0695 15.8563C9.96214 15.9009 9.84702 15.9238 9.73077 15.9238C9.61452 15.9238 9.49941 15.9009 9.39202 15.8563C9.28463 15.8118 9.18706 15.7466 9.10491 15.6643L6.45106 13.0105C6.28507 12.8445 6.19182 12.6194 6.19182 12.3846C6.19182 12.1499 6.28507 11.9247 6.45106 11.7587C6.61705 11.5928 6.84218 11.4995 7.07693 11.4995C7.31167 11.4995 7.5368 11.5928 7.70279 11.7587L9.73077 13.7878L15.2972 8.22029C15.3794 8.1381 15.477 8.0729 15.5844 8.02842C15.6917 7.98394 15.8068 7.96104 15.9231 7.96104C16.0393 7.96104 16.1544 7.98394 16.2618 8.02842C16.3692 8.0729 16.4668 8.1381 16.5489 8.22029C16.6311 8.30248 16.6963 8.40005 16.7408 8.50744C16.7853 8.61482 16.8082 8.72992 16.8082 8.84615C16.8082 8.96239 16.7853 9.07748 16.7408 9.18487C16.6963 9.29225 16.6311 9.38983 16.5489 9.47202Z" fill="{{ block.settings.icon_background }}"/>
+                        </svg>
+                      {% endif %}
+                    </div>
+                    {{ block.settings.feature_text }}
+                  </li>
+                {% endif %}
+
+              {% when 'icon_grid' %}
+                <div class="st_media-and-content-icon-grid--{{ block.id }}" {{ block.shopify_attributes }}>
+                  {% for i in (1..4) %}
+                    {% assign icon_key = 'icon_' | append: i %}
+                    {% assign text_key = 'feature_text_' | append: i %}
+                    {% if block.settings[text_key] != blank %}
+                      <div class="st_media-and-content-icon-grid-item">
+                        {% if block.settings[icon_key] != blank %}
+                          <div class="st_media-and-content-icon-grid-icon">
+                            <img
+                              src="{{ block.settings[icon_key] | image_url: width: 50 }}"
+                              width="50"
+                              height="50"
+                              alt="{{ block.settings[text_key] }}"
+                              loading="lazy"
+                            >
+                          </div>
+                        {% endif %}
+                        {{ block.settings[text_key] }}
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+
+              {% when 'button' %}
+                {% if block.settings.button_text != blank %}
+                  <a
+                    href="{{ block.settings.button_link }}"
+                    {{ block.shopify_attributes }}
+                    class="st_media-and-content-button st_media-and-content-button--{{ block.id }}"
+                  >
+                    {{ block.settings.button_text }}
+                  </a>
+                {% endif %}
+
+              {% when 'icon' %}
+                {% if block.settings.icon != blank %}
+                  <div
+                    class="st_media-and-content-icon st_media-and-content-icon--{{ block.id }}"
+                    {{ block.shopify_attributes }}
+                  >
+                    <img
+                      src="{{ block.settings.icon | image_url: height: block.settings.icon_size }}"
+                      width="{{ block.settings.icon_size }}"
+                      height="{{ block.settings.icon_size }}"
+                      alt=""
+                      loading="lazy"
+                    >
+                  </div>
+                {% endif %}
+
+              {% when 'social_proof' %}
+                <div class="st_media-and-content-social_proof-{{ block.id }}" {{ block.shopify_attributes }}>
+                  <div class="st_media-and-content-social_proof_avatar">
+                    {% if block.settings.avatar %}
+                      {{
+                        block.settings.avatar
+                        | image_url: width: block.settings.avatar_size
+                        | image_tag:
+                          class: 'st_media-and-content-social_proof_avatar_img',
+                          width: block.settings.avatar_size,
+                          height: block.settings.avatar_size
+                      }}
+                    {% else %}
+                      <div
+                        class="st_media-and-content-social_proof_avatar_placeholder"
+                        style="width: {{ block.settings.avatar_size }}px; height: {{ block.settings.avatar_size }}px;"
+                      ></div>
+                    {% endif %}
+                  </div>
+                  <div class="st_media-and-content-social_proof_content">
+                    <div class="st_media-and-content-social_proof_testimonial">
+                      {{ block.settings.testimonial }}
+                    </div>
+                    <div class="st_media-and-content-social_proof_footer">
+                      <div class="st_media-and-content-social_proof_rating-{{ block.id }}">
+                        <svg viewBox="0 0 1000 200" class="social-proof-rating-{{ block.id }}">
+                          <defs>
+                            <polygon id="social-proof-star-{{ block.id }}" points="100,0 131,66 200,76 150,128 162,200 100,166 38,200 50,128 0,76 69,66"></polygon>
+                            <clipPath id="social-proof-stars-{{ block.id }}">
+                              <use xlink:href="#social-proof-star-{{ block.id }}"/>
+                              <use xlink:href="#social-proof-star-{{ block.id }}" x="20%"/>
+                              <use xlink:href="#social-proof-star-{{ block.id }}" x="40%"/>
+                              <use xlink:href="#social-proof-star-{{ block.id }}" x="60%"/>
+                              <use xlink:href="#social-proof-star-{{ block.id }}" x="80%"/>
+                            </clipPath>
+                          </defs>
+                          <rect class="social-proof-rating__background-{{ block.id }}" clip-path="url(#social-proof-stars-{{ block.id }})"></rect>
+                          <rect width="{{ block.settings.rating | times: 20 }}%" class="social-proof-rating__value-{{ block.id }}" clip-path="url(#social-proof-stars-{{ block.id }})"></rect>
+                        </svg>
+                      </div>
+                      <div class="st_media-and-content-social_proof_customer_name">
+                        {{ block.settings.customer_name }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              {% when '@app' %}
+                {% render block %}
+            {% endcase %}
+          {% endfor %}
+
+          {% if in_list %}
+            </ul>
+          {% endif %}
+        </div>
+
+        <div class="st_media-and-content-media">
+          {% if section.settings.media_type == 'video' and section.settings.video_file != blank %}
+            {{
+              section.settings.video_file
+              | video_tag:
+                class: 'st_media-and-content-media-element',
+                autoplay: true,
+                loop: true,
+                muted: true,
+                controls: false,
+                playsinline: true
+            }}
+          {% elsif section.settings.image != blank %}
+            <img
+              src="{{ section.settings.image | image_url: width: 1000 }}"
+              width="1000"
+              height="1000"
+              loading="lazy"
+              alt="{{ section.settings.image.alt | escape }}"
+              class="st_media-and-content-media-element"
+            >
+          {% else %}
+            <img
+              src="https://cdn.shopify.com/s/files/1/0630/4923/6640/files/Untitled-1.png?v=1743863883&width=1000"
+              width="1000"
+              height="1000"
+              loading="lazy"
+              alt=""
+              class="st_media-and-content-media-element"
+            >
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "💫: Media and Content",
+  "class": "st_section",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media Settings"
+    },
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "Media Type",
+      "options": [
+        {
+          "value": "image",
+          "label": "Image"
+        },
+        {
+          "value": "video",
+          "label": "Video"
+        }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Media Image",
+      "info": "Used when Media Type is set to Image"
+    },
+    {
+      "type": "video",
+      "id": "video_file",
+      "label": "Media Video",
+      "info": "We suggest to crop the video to square ratio"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop Layout",
+      "options": [
+        {
+          "value": "media_right",
+          "label": "Media Right"
+        },
+        {
+          "value": "media_left",
+          "label": "Media Left"
+        }
+      ],
+      "default": "media_right"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout",
+      "options": [
+        {
+          "value": "media_top",
+          "label": "Media Top, Content Bottom"
+        },
+        {
+          "value": "content_top",
+          "label": "Content Top, Media Bottom"
+        }
+      ],
+      "default": "media_top"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Max Width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "default": 1300
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content Padding",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Content Spacing",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "default": 25,
+      "info": "Space between content blocks"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 10,
+      "info": "Applied to content box or media container depending on box mode"
+    },
+    {
+      "type": "range",
+      "id": "space_from_top",
+      "label": "Space From Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "space_from_bottom",
+      "label": "Space From Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Background Settings"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "transparent",
+      "info": "Background color for the entire section width"
+    },
+    {
+      "type": "checkbox",
+      "id": "box_enabled",
+      "label": "Enable Box Mode",
+      "default": true,
+      "info": "When enabled, content appears in a box with background color and border radius"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Content Background Color",
+      "default": "#f4f4f4",
+      "info": "Background color for the content container (when box mode is enabled)"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Title",
+      "type": "title",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading_text",
+          "label": "Title",
+          "default": "The magic touch of [sleep] Perfect sleep, always.",
+          "info": "Use [text] to highlight specific words"
+        },
+        {
+          "type": "color",
+          "id": "highlight_color",
+          "label": "Highlight Color",
+          "default": "#7b9ee0"
+        },
+        {
+          "type": "font_picker",
+          "id": "title_font",
+          "label": "Title Font",
+          "default": "inter_n7"
+        },
+        {
+          "type": "range",
+          "id": "title_size",
+          "label": "Title Font Size",
+          "min": 20,
+          "max": 60,
+          "step": 2,
+          "default": 36
+        },
+        {
+          "type": "range",
+          "id": "title_line_height",
+          "label": "Title Line Height",
+          "min": 1.0,
+          "max": 2.0,
+          "step": 0.1,
+          "default": 1.3
+        },
+        {
+          "type": "range",
+          "id": "mobile_title_size",
+          "label": "Mobile Title Font Size",
+          "min": 16,
+          "max": 40,
+          "step": 2,
+          "default": 24
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#000000"
+        }
+      ]
+    },
+    {
+      "name": "Description",
+      "type": "description",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Fall asleep easier and enjoy uninterrupted sleep all night thanks to 100% light-blocking material, a secure fit that won't slip, and complete face coverage that promotes deeper and more restful sleep.</p>"
+        },
+        {
+          "type": "font_picker",
+          "id": "description_font",
+          "label": "Description Font",
+          "default": "inter_n4"
+        },
+        {
+          "type": "range",
+          "id": "description_size",
+          "label": "Description Font Size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "default": 16
+        },
+        {
+          "type": "range",
+          "id": "description_line_height",
+          "label": "Description Line Height",
+          "min": 1.0,
+          "max": 2.0,
+          "step": 0.1,
+          "default": 1.7
+        },
+        {
+          "type": "range",
+          "id": "mobile_description_size",
+          "label": "Mobile Description Font Size",
+          "min": 10,
+          "max": 18,
+          "step": 1,
+          "default": 14
+        },
+        {
+          "type": "color",
+          "id": "description_color",
+          "label": "Description Color",
+          "default": "#333333"
+        }
+      ]
+    },
+    {
+      "name": "Icon and Text",
+      "type": "icon_and_text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "feature_text",
+          "label": "Feature Text",
+          "default": "Deeper, uninterrupted sleep"
+        },
+        {
+          "type": "header",
+          "content": "Icon Settings"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon (Optional)",
+          "info": "Leave empty to use default checkmark icon"
+        },
+        {
+          "type": "font_picker",
+          "id": "feature_font",
+          "label": "Feature Font",
+          "default": "inter_n4"
+        },
+        {
+          "type": "range",
+          "id": "feature_size",
+          "label": "Feature Text Size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "default": 15
+        },
+        {
+          "type": "color",
+          "id": "feature_color",
+          "label": "Feature Text Color",
+          "default": "#333333"
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size",
+          "min": 16,
+          "max": 30,
+          "step": 2,
+          "default": 20
+        },
+        {
+          "type": "color",
+          "id": "icon_background",
+          "label": "Icon Background",
+          "default": "#7b9ee0"
+        },
+        {
+          "type": "color",
+          "id": "icon_color",
+          "label": "Icon Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "icon_opacity",
+          "label": "Icon Opacity",
+          "min": 0.1,
+          "max": 1.0,
+          "step": 0.1,
+          "default": 1.0
+        }
+      ]
+    },
+    {
+      "name": "Icon Grid",
+      "type": "icon_grid",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Grid Settings"
+        },
+        {
+          "type": "font_picker",
+          "id": "feature_font",
+          "label": "Text Font",
+          "default": "inter_n4"
+        },
+        {
+          "type": "range",
+          "id": "feature_size",
+          "label": "Text Size",
+          "min": 10,
+          "max": 18,
+          "step": 1,
+          "default": 13
+        },
+        {
+          "type": "color",
+          "id": "feature_color",
+          "label": "Text Color",
+          "default": "#555555"
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size",
+          "min": 20,
+          "max": 40,
+          "step": 2,
+          "default": 30
+        },
+        {
+          "type": "range",
+          "id": "icon_opacity",
+          "label": "Icon Opacity",
+          "min": 0.1,
+          "max": 1.0,
+          "step": 0.1,
+          "default": 0.7
+        },
+        {
+          "type": "header",
+          "content": "Item 1"
+        },
+        {
+          "type": "text",
+          "id": "feature_text_1",
+          "label": "Text",
+          "default": "Breathable fabric"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_1",
+          "label": "Icon"
+        },
+        {
+          "type": "header",
+          "content": "Item 2"
+        },
+        {
+          "type": "text",
+          "id": "feature_text_2",
+          "label": "Text",
+          "default": "Temperature regulating"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_2",
+          "label": "Icon"
+        },
+        {
+          "type": "header",
+          "content": "Item 3"
+        },
+        {
+          "type": "text",
+          "id": "feature_text_3",
+          "label": "Text",
+          "default": "Durable material"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_3",
+          "label": "Icon"
+        },
+        {
+          "type": "header",
+          "content": "Item 4"
+        },
+        {
+          "type": "text",
+          "id": "feature_text_4",
+          "label": "Text",
+          "default": "Comfortable fit"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_4",
+          "label": "Icon"
+        }
+      ]
+    },
+    {
+      "name": "Button",
+      "type": "button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop now"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "font_picker",
+          "id": "button_font",
+          "label": "Button Font",
+          "default": "inter_n5"
+        },
+        {
+          "type": "range",
+          "id": "button_font_size",
+          "label": "Button Font Size",
+          "min": 12,
+          "max": 20,
+          "step": 1,
+          "default": 14
+        },
+        {
+          "type": "range",
+          "id": "button_padding_vertical",
+          "label": "Button Vertical Padding",
+          "min": 6,
+          "max": 20,
+          "step": 2,
+          "default": 12
+        },
+        {
+          "type": "range",
+          "id": "button_padding_horizontal",
+          "label": "Button Horizontal Padding",
+          "min": 10,
+          "max": 40,
+          "step": 2,
+          "default": 24
+        },
+        {
+          "type": "color",
+          "id": "button_background",
+          "label": "Button Background",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "button_hover_background",
+          "label": "Button Hover Background",
+          "default": "#333333"
+        },
+        {
+          "type": "color",
+          "id": "button_hover_text_color",
+          "label": "Button Hover Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "button_border_radius",
+          "label": "Button Border Radius",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "button_border_width",
+          "label": "Button Border Width",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "button_border_color",
+          "label": "Button Border Color",
+          "default": "#000000"
+        }
+      ]
+    },
+    {
+      "name": "Icon",
+      "type": "icon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon",
+          "info": "Upload an icon image"
+        },
+        {
+          "type": "range",
+          "id": "icon_size",
+          "label": "Icon Size",
+          "min": 20,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "type": "select",
+          "id": "icon_alignment",
+          "label": "Icon Alignment",
+          "options": [
+            {
+              "value": "flex-start",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "flex-end",
+              "label": "Right"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "range",
+          "id": "icon_opacity",
+          "label": "Icon Opacity",
+          "min": 0.1,
+          "max": 1.0,
+          "step": 0.1,
+          "default": 1.0
+        }
+      ]
+    },
+    {
+      "name": "Social Proof",
+      "type": "social_proof",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Customer Avatar"
+        },
+        {
+          "type": "richtext",
+          "id": "testimonial",
+          "label": "Testimonial Text",
+          "default": "<p>These products completely transformed my daily routine—it's so easy to care for, and everything feels fresher already!</p>",
+          "info": "You can use formatting options like bold and italic to emphasize parts of the testimonial."
+        },
+        {
+          "type": "text",
+          "id": "customer_name",
+          "label": "Customer Name",
+          "default": "Emily F."
+        },
+        {
+          "type": "header",
+          "content": "Star Rating"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star Rating",
+          "min": 0,
+          "max": 5,
+          "step": 0.5,
+          "default": 5
+        },
+        {
+          "type": "color",
+          "id": "star_color",
+          "label": "Star Color",
+          "default": "#FFD700"
+        },
+        {
+          "type": "color",
+          "id": "star_color_background",
+          "label": "Star Background Color",
+          "default": "#E1E1E1"
+        },
+        {
+          "type": "range",
+          "id": "star_size",
+          "label": "Star Size",
+          "min": 10,
+          "max": 24,
+          "step": 2,
+          "unit": "px",
+          "default": 16
+        },
+        {
+          "type": "header",
+          "content": "Appearance"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_border",
+          "label": "Show Border",
+          "default": true
+        },
+        {
+          "type": "color",
+          "id": "border_color",
+          "label": "Border Color",
+          "default": "#E0E0E0"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "range",
+          "id": "border_radius",
+          "label": "Border Radius",
+          "min": 0,
+          "max": 30,
+          "step": 1,
+          "default": 8
+        },
+        {
+          "type": "range",
+          "id": "padding",
+          "label": "Padding",
+          "min": 10,
+          "max": 40,
+          "step": 5,
+          "default": 20
+        },
+        {
+          "type": "range",
+          "id": "avatar_size",
+          "label": "Avatar Size",
+          "min": 30,
+          "max": 80,
+          "step": 5,
+          "default": 50
+        },
+        {
+          "type": "header",
+          "content": "Typography"
+        },
+        {
+          "type": "font_picker",
+          "id": "testimonial_font",
+          "label": "Testimonial Font",
+          "default": "inter_n4"
+        },
+        {
+          "type": "range",
+          "id": "testimonial_size",
+          "label": "Testimonial Font Size",
+          "min": 12,
+          "max": 24,
+          "step": 1,
+          "default": 16
+        },
+        {
+          "type": "color",
+          "id": "testimonial_color",
+          "label": "Testimonial Text Color",
+          "default": "#333333"
+        },
+        {
+          "type": "font_picker",
+          "id": "name_font",
+          "label": "Customer Name Font",
+          "default": "inter_n6"
+        },
+        {
+          "type": "range",
+          "id": "name_size",
+          "label": "Name Font Size",
+          "min": 10,
+          "max": 20,
+          "step": 1,
+          "default": 14
+        },
+        {
+          "type": "color",
+          "id": "name_color",
+          "label": "Name Text Color",
+          "default": "#333333"
+        }
+      ]
+    },
+    { "type": "@app" }
+  ],
+  "presets": [
+    {
+      "name": "💫: Media and Content",
+      "blocks": [
+        {
+          "type": "title",
+          "settings": {
+            "heading_text": "The Art of [Perfect Sleep.] Night After Night",
+            "highlight_color": "#d1a024",
+            "title_font": "inter_n7",
+            "title_size": 42,
+            "title_line_height": 1.3,
+            "mobile_title_size": 24,
+            "title_color": "#000000"
+          }
+        },
+        {
+          "type": "description",
+          "settings": {
+            "description": "<p>Fall asleep faster and stay deeply asleep all night with our thoughtfully designed sleep mask. Crafted from 100% light-blocking fabric. The secure, no-slip fit ensures it stays comfortably in place, while the full face coverage encourages a calming sensation that helps you relax, unwind, and experience truly restorative sleep.</p>",
+            "description_font": "inter_n4",
+            "description_size": 16,
+            "description_line_height": 1.7,
+            "mobile_description_size": 14,
+            "description_color": "#333333"
+          }
+        },
+        {
+          "type": "icon_and_text",
+          "settings": {
+            "feature_text": "Deeper, uninterrupted sleep",
+            "feature_font": "inter_n4",
+            "feature_size": 15,
+            "feature_color": "#333333",
+            "icon_size": 20,
+            "icon_background": "#121212",
+            "icon_color": "#ffffff",
+            "icon_opacity": 1
+          }
+        },
+        {
+          "type": "icon_and_text",
+          "settings": {
+            "feature_text": "Fall asleep effortlessly",
+            "feature_font": "inter_n4",
+            "feature_size": 15,
+            "feature_color": "#333333",
+            "icon_size": 20,
+            "icon_background": "#121212",
+            "icon_color": "#ffffff",
+            "icon_opacity": 1
+          }
+        },
+        {
+          "type": "icon_and_text",
+          "settings": {
+            "feature_text": "More REM sleep",
+            "feature_font": "inter_n4",
+            "feature_size": 15,
+            "feature_color": "#333333",
+            "icon_size": 20,
+            "icon_background": "#121212",
+            "icon_color": "#ffffff",
+            "icon_opacity": 1
+          }
+        },
+        {
+          "type": "social_proof",
+          "settings": {
+            "testimonial": "<p>These products completely transformed my daily routine—it's so easy to care for, and everything feels fresher already!</p>",
+            "customer_name": "Emily F.",
+            "rating": 4.5,
+            "star_color": "#facd56",
+            "star_color_background": "#e1e1e1",
+            "star_size": 16,
+            "show_border": true,
+            "border_color": "#e0e0e0",
+            "background_color": "#ffffff",
+            "border_radius": 8,
+            "padding": 20,
+            "avatar_size": 50,
+            "testimonial_font": "inter_n4",
+            "testimonial_size": 16,
+            "testimonial_color": "#333333",
+            "name_font": "inter_n6",
+            "name_size": 14,
+            "name_color": "#333333"
+          }
+        }
+      ],
+      "settings": {
+        "media_type": "image",
+        "desktop_layout": "media_right",
+        "mobile_layout": "media_top",
+        "section_max_width": 1400,
+        "content_padding": 40,
+        "content_gap": 25,
+        "border_radius": 10,
+        "space_from_top": 36,
+        "space_from_bottom": 48,
+        "section_background_color": "rgba(0,0,0,0)",
+        "box_enabled": true,
+        "background_color": "#f4f4f4"
+      }
+    }
+  ]
+}
+{% endschema %}

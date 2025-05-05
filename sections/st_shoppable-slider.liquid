@@ -1,0 +1,848 @@
+{% comment %} Version: 1.2.7 {% endcomment %}
+
+{% comment %}
+  ---------------------------------------------------------
+  Copyright © 2024 Sternify. All rights reserved.
+  Any unauthorized reproduction, alteration, or distribution
+  of this code, in part or in whole, is expressly forbidden.
+  Violators will be subject to legal prosecution to the maximum
+  extent permitted by law. For permissions or inquiries,
+  please contact us in our discord server: https://discord.gg/NHHCEPhsG8
+  ---------------------------------------------------------
+{% endcomment %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8.4.7/swiper-bundle.min.css">
+
+<script
+  src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/verifier.js?v=1717092340"
+  data-section-id="{{ section.id }}"
+></script>
+
+<div class="st_not-found"></div>
+
+<style>
+  {%- assign subtitle_font = section.settings.subtitle_font -%}
+  {%- assign title_font = section.settings.title_font -%}
+  {%- assign text_font = section.settings.text_font -%}
+  {{ subtitle_font | font_face }}
+  {{ title_font | font_face }}
+  {{ text_font | font_face }}
+
+  /* ---------------------Customize UGC Section------------------ */
+  .st_ugc-section div:empty {
+    display: flex !important;
+  }
+
+  .st_ugc-section {
+    position: relative;
+    width: 100%;
+    padding-top: {{ section.settings.margin_top }}px;
+    padding-bottom: {{ section.settings.margin_bottom }}px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: calc((100% - 1650px) / 2);
+    padding-right: calc((100% - 1650px) / 2);
+    margin: 0 auto;
+  }
+
+  .st_ugc-section-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+  }
+
+  .st_ugc-section-title h1 {
+    font-family: {{ title_font.family }}, {{ title_font.fallback_families }};
+    font-weight: {{ title_font.weight }};
+    font-size: {{ section.settings.title_fontsize_desktop }}px;
+    line-height: 1;
+    text-align: center;
+    margin-bottom: 5px;
+    color: {{ section.settings.title_color }};
+  }
+
+  .st_ugc-section-title h3 {
+    font-family: {{ subtitle_font.family }}, {{ subtitle_font.fallback_families }};
+    font-weight: {{ subtitle_font.weight }};
+    font-size: {{ section.settings.subtitle_fontsize_desktop }}px;
+    text-align: center;
+    color: {{ section.settings.subtitle_color }};
+  }
+
+  /* ------------------------Swiper---------------------- */
+  .st_ugc-section .swiper {
+    width: 100%;
+    padding-top: 50px;
+    padding-bottom: 50px;
+  }
+
+  .st_ugc-section .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 351px;
+    height: 624px;
+    border-radius: 21px;
+  }
+
+  .st_ugc-section .swiper-slide-visible {
+    opacity: 0.5 !important;
+  }
+
+  .st_ugc-section .swiper-slide-duplicate {
+    transition: opacity 0.7s ease !important;
+  }
+
+  .st_ugc-section .swiper-slide-duplicate,
+  .st_ugc-section .swiper-slide {
+    opacity: 0;
+  }
+
+  .st_ugc-section .swiper-slide-active {
+    transition: none !important;
+    cursor: pointer;
+    opacity: 1 !important;
+  }
+
+  .st_ugc-section .swiper-slide-active,
+  .st_ugc-section .swiper-slide-prev,
+  .st_ugc-section .swiper-slide-next {
+    opacity: 1 !important;
+  }
+
+  .st_ugc-section .swiper-slide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .st_ugc-section-slider-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .st_ugc-section .swiper-3d .swiper-slide-shadow-left,
+  .st_ugc-section .swiper-3d .swiper-slide-shadow-right {
+    background-image: none;
+  }
+
+  /* ---------------------Customize navigation buttons------------------ */
+  .st_ugc-section .swiper-button-next,
+  .st_ugc-section .swiper-button-prev {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: none;
+    position: absolute;
+    top: 50%;
+    transition: left 0.3s ease, right 0.3s ease;
+  }
+
+  .st_ugc-section .swiper-button-prev::after {
+    font-size: 25px;
+    color: black;
+    text-rendering: auto;
+  }
+
+  .st_ugc-section .swiper-button-next::after {
+    font-size: 25px;
+    color: black;
+    text-rendering: auto;
+  }
+
+  .st_ugc-section .swiper-button-next {
+    right: 1%;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 22px -6px rgba(92, 91, 92, 1);
+  }
+
+  .st_ugc-section .swiper-button-prev {
+    left: 1%;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 22px -6px rgba(92, 91, 92, 1);
+  }
+
+  /* ----------------------------Customize the slides------------------------------*/
+  .st_ugc-section-slider {
+    background: rgb(0, 0, 0);
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.98) 0%, rgba(255, 255, 255, 0) 60%);
+    border-radius: 21px;
+    height: 100%;
+  }
+
+  .st_ugc-section-slider img {
+    border-radius: 21px;
+    position: relative;
+    z-index: -1;
+  }
+
+  .st_ugc-section-slider video {
+    position: relative;
+    border-radius: 21px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .st_ugc-section-slider-description {
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    display: flex;
+    align-items: center;
+    color: white;
+    gap: 15px;
+    width: 100%;
+    padding: 0 20px;
+  }
+
+  .st_ugc-section-slider-description-text {
+    display: flex;
+    flex-direction: column;
+    font-family: {{ text_font.family }}, {{ text_font.fallback_families }};
+    font-weight: {{ text_font.weight }};
+    width: 100%; /* Updated to take full width when no button */
+    gap: 5px;
+  }
+
+  /* Only apply fixed width when button is present (video slides) */
+  .st_ugc-section-slider-description button + .st_ugc-section-slider-description-text {
+    width: 240px;
+  }
+
+  .st_ugc-section-slider-description-text h3 {
+    font-size: {{ section.settings.text_fontsize }}px;
+    color: {{ section.settings.description_color }};
+  }
+
+  .st_ugc-section-slider-description-text-user {
+    display: flex;
+    align-items: center;
+    font-family: Inter-SemiBold !important;
+    gap: 4px;
+  }
+
+  .st_ugc-section-slider-description-text-user svg {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  .st_ugc-section-slider-description-text-user svg path:first-child {
+    fill: {{ section.settings.verified_icon_color }};
+  }
+
+  .st_ugc-section-slider-description-text-user-name {
+    font-size: 2em;
+    color: {{ section.settings.username_color }};
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .st_ugc-section-slider-description button {
+    width: 63px;
+    height: 63px;
+    min-width: 63px;
+    min-height: 63px;
+    border-radius: 7px;
+    background: {{ section.settings.button_bg_color }};
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 254, 254, 0.616);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .st_ugc-section-slider-description button #iconPause {
+    width: 63px;
+    height: 63px;
+  }
+
+  .st_ugc-section-slider-description-text h3 a{
+    color: #42A5F5;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .st_ugc-section-slider-description-text h3 a svg{
+    width: 15px;
+    height: 15px;
+    fill: #42A5F5;
+  }
+
+  .st_ugc-section-slider-description button svg * {
+    fill: {{ section.settings.button_icon_color }};
+  }
+
+  @media (max-width: 1750px) {
+    .st_ugc-section .swiper-button-prev {
+      left: 3%;
+    }
+
+    .st_ugc-section .swiper-button-next {
+      right: 3%;
+    }
+  }
+
+  @media (max-width: 750px) {
+    .st_ugc-section .swiper-slide{
+      width: 288px;
+      height: 512px;
+    }
+
+    .st_ugc-section .swiper-button-prev,
+    .st_ugc-section .swiper-button-next {
+      width: 50px;
+      height: 50px;
+    }
+
+    .st_ugc-section .swiper {
+      padding-top: 20px;
+      padding-bottom: 20px;
+      zoom: 0.8;
+    }
+
+    .st_ugc-section-slider-description-text-user-name{
+      font-size: 1.5em;
+    }
+
+    .st_ugc-section-title h1 {
+      font-size: {{ section.settings.title_fontsize_mobile }}px;
+    }
+
+    .st_ugc-section-title h3 {
+      font-size: {{ section.settings.subtitle_fontsize_mobile }}px;
+    }
+  }
+</style>
+
+<div class="st_wrapper st_check-section--{{ section.id }}">
+  <div class="st_ugc-section">
+    <div class="st_ugc-section-title">
+      <h1>{{ section.settings.title }}</h1>
+      <h3>{{ section.settings.subtitle }}</h3>
+    </div>
+
+    <!-- ---------------- Swiper ------------------- -->
+    <div class="swiper st_ugc-section-swiper">
+      <div class="swiper-wrapper">
+        {% for block in section.blocks %}
+          <div class="swiper-slide">
+            <div class="st_ugc-section-slider">
+              {% if block.type == 'slider_video' %}
+                {% if block.settings.video != blank %}
+                  {{ block.settings.video | video_tag: id: 'video', image_size: '1920x' }}
+                {% else %}
+                  {% case forloop.index0 %}
+                    {% when 0 %}
+                      <video
+                        id="video"
+                        src="https://cdn.shopify.com/videos/c/o/v/464ca8e360e4412d815ad582d272e85e.mp4"
+                        type="video/mp4"
+                      ></video>
+                    {% when 1 %}
+                      <video
+                        id="video"
+                        src="https://cdn.shopify.com/videos/c/o/v/c39a9d2959c64d7097329463cbcf2472.mp4"
+                        type="video/mp4"
+                      ></video>
+                    {% when 2 %}
+                      <video
+                        id="video"
+                        src="https://cdn.shopify.com/videos/c/o/v/d6b9189c3bf64d6a926ea5a5a2e81628.mp4"
+                        type="video/mp4"
+                      ></video>
+                    {% else %}
+                      <video
+                        id="video"
+                        src="https://cdn.shopify.com/videos/c/o/v/73071a07ed004b6a8db75c5d4c5f5a4a.mp4"
+                        type="video/mp4"
+                      ></video>
+                  {% endcase %}
+                {% endif %}
+              {% elsif block.type == 'slider_image' %}
+                {% if block.settings.image != blank %}
+                  {{ block.settings.image | image_url: width: 1920 | image_tag: class: 'st_ugc-section-slider-image' }}
+                {% endif %}
+              {% endif %}
+
+              <div class="st_ugc-section-slider-description">
+                <div class="st_ugc-section-slider-description-text">
+                  <div class="st_ugc-section-slider-description-text-user">
+                    <div class="st_ugc-section-slider-description-text-user-name">{{ block.settings.user_name }}</div>
+                    {% if block.settings.show_verified_icon %}
+                      <svg
+                        id="verification"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 23 23"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M14.7045 0.703125L16.4826 3.45572L19.7587 3.61642L19.9246 6.89257L22.6772 8.67061L21.1843 11.5891L22.6772 14.5024L19.9246 16.2804L19.7639 19.5566L16.4878 19.7225L14.7097 22.475L11.7912 20.9821L8.87794 22.475L7.0999 19.7225L3.82375 19.5618L3.65787 16.2856L0.905273 14.5076L2.3982 11.5891L0.905273 8.6758L3.65787 6.89776L3.81856 3.6216L7.09472 3.45572L8.87276 0.703125L11.7912 2.19606L14.7045 0.703125Z"
+                          fill="currentColor" />
+                        <path
+                          d="M10.4385 15.3471L7.07422 11.9828L8.17318 10.8839L10.4592 13.1647L15.4149 8.35938L16.4984 9.47389L10.4385 15.3471Z"
+                          fill="white" />
+                      </svg>
+                    {% endif %}
+                  </div>
+                  <h3>
+                    {{ block.settings.sub_text }}
+                    {% if block.settings.slider_product != blank %}
+                      <a
+                        href="{{ block.settings.slider_product.url }}"
+                        target="_blank"
+                        >{{ block.settings.slider_product_text }}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="32"
+                          height="32"
+                          fill="#000000"
+                          viewBox="0 0 256 256"
+                        >
+                          <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path>
+                        </svg>
+                      </a>
+                    {% endif %}
+                  </h3>
+                </div>
+
+                {% if block.type == 'slider_video' %}
+                  <button>
+                    <svg
+                      id="iconPlay"
+                      width="24"
+                      height="29"
+                      viewBox="0 0 24 29"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M22.8463 12.8518L3.79321 1.19619C3.47199 0.999486 3.10407 0.892103 2.72747 0.885128C2.35086 0.878154 1.97922 0.971842 1.65093 1.15652C1.32577 1.33832 1.0549 1.60346 0.866176 1.92466C0.677454 2.24586 0.577692 2.61153 0.577148 2.98407V26.2926C0.579599 26.8514 0.803852 27.3864 1.20061 27.7799C1.59737 28.1735 2.13416 28.3934 2.69298 28.3913C3.08303 28.3911 3.4655 28.2836 3.7985 28.0805L22.8463 16.4249C23.1525 16.2383 23.4055 15.9761 23.5811 15.6634C23.7567 15.3508 23.8489 14.9982 23.8489 14.6397C23.8489 14.2811 23.7567 13.9286 23.5811 13.6159C23.4055 13.3033 23.1525 13.041 22.8463 12.8544V12.8518ZM2.69298 26.2675V3.00126L21.713 14.6383L2.69298 26.2675Z"
+                      fill="white" />
+                    </svg>
+                    <svg
+                      id="iconPause"
+                      style="display: none;"
+                      width="800"
+                      height="800"
+                      viewBox="0 0 800 800"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M492.5 562C480.5 562 471.5 553 471.5 541V259C471.5 247 480.5 238 492.5 238C504.5 238 513.5 247 513.5 259V542C513.5 553 504.5 562 492.5 562ZM308.5 562C296.5 562 287.5 553 287.5 541V259C287.5 247 296.5 238 308.5 238C320.5 238 329.5 247 329.5 259V542C328.5 553 320.5 562 308.5 562Z"
+                        fill="white" />
+                    </svg>
+                  </button>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        {% if section.blocks.size < 4 %}
+          {% for block in section.blocks %}
+            <div class="swiper-slide">
+              <div class="st_ugc-section-slider">
+                {% if block.type == 'slider_video' %}
+                  {% if block.settings.video != blank %}
+                    {{ block.settings.video | video_tag: id: 'video', image_size: '1920x' }}
+                  {% else %}
+                    {% case forloop.index0 %}
+                      {% when 0 %}
+                        <video
+                          id="video"
+                          src="https://cdn.shopify.com/videos/c/o/v/464ca8e360e4412d815ad582d272e85e.mp4"
+                          type="video/mp4"
+                        ></video>
+                      {% when 1 %}
+                        <video
+                          id="video"
+                          src="https://cdn.shopify.com/videos/c/o/v/c39a9d2959c64d7097329463cbcf2472.mp4"
+                          type="video/mp4"
+                        ></video>
+                      {% when 2 %}
+                        <video
+                          id="video"
+                          src="https://cdn.shopify.com/videos/c/o/v/d6b9189c3bf64d6a926ea5a5a2e81628.mp4"
+                          type="video/mp4"
+                        ></video>
+                      {% else %}
+                        <video
+                          id="video"
+                          src="https://cdn.shopify.com/videos/c/o/v/73071a07ed004b6a8db75c5d4c5f5a4a.mp4"
+                          type="video/mp4"
+                        ></video>
+                    {% endcase %}
+                  {% endif %}
+                {% elsif block.type == 'slider_image' %}
+                  {% if block.settings.image != blank %}
+                    {{ block.settings.image | image_url: width: 1920 | image_tag }}
+                  {% endif %}
+                {% endif %}
+
+                <div class="st_ugc-section-slider-description">
+                  <div class="st_ugc-section-slider-description-text">
+                    <div class="st_ugc-section-slider-description-text-user">
+                      <div class="st_ugc-section-slider-description-text-user-name">{{ block.settings.user_name }}</div>
+                      {% if block.settings.show_verified_icon %}
+                        <svg
+                          id="verification"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 23 23"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M14.7045 0.703125L16.4826 3.45572L19.7587 3.61642L19.9246 6.89257L22.6772 8.67061L21.1843 11.5891L22.6772 14.5024L19.9246 16.2804L19.7639 19.5566L16.4878 19.7225L14.7097 22.475L11.7912 20.9821L8.87794 22.475L7.0999 19.7225L3.82375 19.5618L3.65787 16.2856L0.905273 14.5076L2.3982 11.5891L0.905273 8.6758L3.65787 6.89776L3.81856 3.6216L7.09472 3.45572L8.87276 0.703125L11.7912 2.19606L14.7045 0.703125Z"
+                            fill="currentColor" />
+                          <path
+                            d="M10.4385 15.3471L7.07422 11.9828L8.17318 10.8839L10.4592 13.1647L15.4149 8.35938L16.4984 9.47389L10.4385 15.3471Z"
+                            fill="white" />
+                        </svg>
+                      {% endif %}
+                    </div>
+                    <h3>
+                      {{ block.settings.sub_text }}
+                      {% if block.settings.slider_product != blank %}
+                        <a
+                          href="{{ block.settings.slider_product.url }}"
+                          target="_blank"
+                          >{{ block.settings.slider_product_text }}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="32"
+                            height="32"
+                            fill="#000000"
+                            viewBox="0 0 256 256"
+                          >
+                            <path d="M221.66,133.66l-72,72a8,8,0,0,1-11.32-11.32L196.69,136H40a8,8,0,0,1,0-16H196.69L138.34,61.66a8,8,0,0,1,11.32-11.32l72,72A8,8,0,0,1,221.66,133.66Z"></path>
+                          </svg>
+                        </a>
+                      {% endif %}
+                    </h3>
+                  </div>
+
+                  {% if block.type == 'slider_video' %}
+                    <button>
+                      <svg
+                        id="iconPlay"
+                        width="24"
+                        height="29"
+                        viewBox="0 0 24 29"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M22.8463 12.8518L3.79321 1.19619C3.47199 0.999486 3.10407 0.892103 2.72747 0.885128C2.35086 0.878154 1.97922 0.971842 1.65093 1.15652C1.32577 1.33832 1.0549 1.60346 0.866176 1.92466C0.677454 2.24586 0.577692 2.61153 0.577148 2.98407V26.2926C0.579599 26.8514 0.803852 27.3864 1.20061 27.7799C1.59737 28.1735 2.13416 28.3934 2.69298 28.3913C3.08303 28.3911 3.4655 28.2836 3.7985 28.0805L22.8463 16.4249C23.1525 16.2383 23.4055 15.9761 23.5811 15.6634C23.7567 15.3508 23.8489 14.9982 23.8489 14.6397C23.8489 14.2811 23.7567 13.9286 23.5811 13.6159C23.4055 13.3033 23.1525 13.041 22.8463 12.8544V12.8518ZM2.69298 26.2675V3.00126L21.713 14.6383L2.69298 26.2675Z"
+                        fill="white" />
+                      </svg>
+                      <svg
+                        id="iconPause"
+                        style="display: none;"
+                        width="800"
+                        height="800"
+                        viewBox="0 0 800 800"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M492.5 562C480.5 562 471.5 553 471.5 541V259C471.5 247 480.5 238 492.5 238C504.5 238 513.5 247 513.5 259V542C513.5 553 504.5 562 492.5 562ZM308.5 562C296.5 562 287.5 553 287.5 541V259C287.5 247 296.5 238 308.5 238C320.5 238 329.5 247 329.5 259V542C328.5 553 320.5 562 308.5 562Z"
+                        fill="white" />
+                      </svg>
+                    </button>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "💫: Shoppable Slider",
+  "class": "sternify-section",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "header",
+      "content": "⚠️ Important ⚠️",
+      "info": "Please ensure that Sternify [App Extensions](https://www.sternify.com/app-extentions) are activated."
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top Margin",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom Margin",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Title and Subtitle"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Over 1000+ People Trust Us"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Check out our reviews and see for yourself!"
+    },
+    {
+      "type": "header",
+      "content": "Font Settings"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title Font",
+      "default": "poppins_n6"
+    },
+    {
+      "type": "range",
+      "id": "title_fontsize_desktop",
+      "label": "Title Font Size (Desktop)",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "title_fontsize_mobile",
+      "label": "Title Font Size (Mobile)",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "default": 32
+    },
+    {
+      "type": "font_picker",
+      "id": "subtitle_font",
+      "label": "Subtitle Font",
+      "default": "poppins_n3"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_fontsize_desktop",
+      "label": "Subtitle Font Size (Desktop)",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "subtitle_fontsize_mobile",
+      "label": "Subtitle Font Size (Mobile)",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "Description Text Font",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "range",
+      "id": "text_fontsize",
+      "label": "Description Text Font Size",
+      "min": 10,
+      "max": 25,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle Color",
+      "default": "#4A4A4A"
+    },
+    {
+      "type": "color",
+      "id": "username_color",
+      "label": "Username Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Text Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_color",
+      "label": "Play Button Background Color",
+      "default": "#4A4A4A"
+    },
+    {
+      "type": "color",
+      "id": "button_icon_color",
+      "label": "Play Button Icon Color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "verified_icon_color",
+      "label": "Verified Icon Color",
+      "default": "#42A5F5"
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Slider Video",
+      "type": "slider_video",
+      "settings": [
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Slider Video"
+        },
+        {
+          "type": "text",
+          "id": "user_name",
+          "default": "Sarah M.",
+          "label": "User Name"
+        },
+        {
+          "type": "text",
+          "id": "sub_text",
+          "default": "Ordered the Sternify Mask 2.0",
+          "label": "Sub Text"
+        },
+        {
+          "type": "product",
+          "id": "slider_product",
+          "label": "Select Product",
+          "info": "Optional: Choose a product to link in the slider."
+        },
+        {
+          "type": "text",
+          "id": "slider_product_text",
+          "label": "Product Text",
+          "default": "Produkt ansehen",
+          "info": "The text that will be displayed in the product link."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified_icon",
+          "label": "Verified",
+          "default": true
+        }
+      ]
+    },
+    {
+      "name": "Slider Image",
+      "type": "slider_image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Slider Image"
+        },
+        {
+          "type": "text",
+          "id": "user_name",
+          "default": "Sarah M.",
+          "label": "User Name"
+        },
+        {
+          "type": "text",
+          "id": "sub_text",
+          "default": "Ordered the Sternify Mask 2.0",
+          "label": "Sub Text"
+        },
+        {
+          "type": "product",
+          "id": "slider_product",
+          "label": "Select Product",
+          "info": "Optional: Choose a product to link in the slider."
+        },
+        {
+          "type": "text",
+          "id": "slider_product_text",
+          "label": "Product Text",
+          "default": "Produkt ansehen",
+          "info": "The text that will be displayed in the product link."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_verified_icon",
+          "label": "Verified",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "💫: Shoppable Slider",
+      "blocks": [
+        {
+          "type": "slider_video"
+        },
+        {
+          "type": "slider_video"
+        },
+        {
+          "type": "slider_video"
+        },
+        {
+          "type": "slider_video"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

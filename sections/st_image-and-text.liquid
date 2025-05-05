@@ -1,0 +1,553 @@
+{% comment %} Version: 2.1.8 {% endcomment %}
+
+{% comment %}
+  ---------------------------------------------------------
+  Copyright © 2024 Sternify. All rights reserved.
+  Any unauthorized reproduction, alteration, or distribution
+  of this code, in part or in whole, is expressly forbidden.
+  Violators will be subject to legal prosecution to the maximum
+  extent permitted by law. For permissions or inquiries,
+  please contact us in our discord server: https://discord.gg/NHHCEPhsG8
+  ---------------------------------------------------------
+{% endcomment %}
+
+<script
+  src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/verifier.js?v=1717092340"
+  data-section-id="{{ section.id }}"
+></script>
+
+<div class="st_not-found"></div>
+
+<style>
+  {%- assign subtitle_font = section.settings.subtitle_font -%}
+  {%- assign title_font = section.settings.title_font -%}
+  {%- assign text_font = section.settings.text_font -%}
+  {%- assign benefits_font = section.settings.benefits_font -%}
+  {%- assign benefits_font_bolder = section.settings.benefits_font | font_modify: 'weight', '+200' -%}
+  {{ subtitle_font | font_face }}
+  {{ title_font | font_face }}
+  {{ text_font | font_face }}
+  {{ benefits_font | font_face }}
+  {{ benefits_font_bolder | font_face }}
+
+  .st_img-text-wrapper--{{ section.id }} {
+    margin: 0px auto;
+    max-width: {{  section.settings.maximal_width }}rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 200px;
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+    padding-inline: 50px;
+    flex-direction: {% if section.settings.bild_position == 'rechts' %}row{% else %}row-reverse{% endif %};
+    height: fit-content;
+  }
+
+  .st_img-text-text--{{ section.id }} {
+    width: {{ 100 | minus: section.settings.image_width }}%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .st_img-text-text--{{ section.id }} p {
+    font-family: {{ text_font.family }}, {{ text_font.fallback_families }};
+    font-size: {{ section.settings.text_fontsize }}px;
+    font-weight: {{ text_font.weight }};
+    color: {{ section.settings.textblock_color }};
+  }
+
+  .st_img-text-text-title--{{ section.id }} h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: {{ section.settings.title_fontsize }}px;
+    font-family: {{ title_font.family }}, {{ title_font.fallback_families }};
+    font-weight: {{ title_font.weight }};
+    color: {{ section.settings.titel_color }};
+  }
+
+  .st_img-text-text-title--{{ section.id }} h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 300;
+    font-size: {{ section.settings.subtitle_fontsize }}px;
+    font-family: {{ subtitle_font.family }}, {{ subtitle_font.fallback_families }};
+    font-weight: {{ subtitle_font.weight }};
+    color: {{ section.settings.subtitel_color }};
+  }
+
+  .st_img-text-image--{{ section.id }} {
+    width: 50%;
+    position: relative;
+    max-height: 550px;
+    display: flex
+  }
+
+  .st_img-text-image--{{ section.id }} img:first-child {
+    object-fit: cover;
+    object-position: center;
+    border-radius: {{ section.settings.image_border_radius }}px;
+  }
+
+  .st_img-text-image-floating--{{ section.id }} {
+    position: absolute;
+    {% if section.settings.bild_position == 'rechts' %}
+    left: -70px;
+    {% else %}
+    right: -70px;
+    {% endif %}
+    bottom: 10%;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: {{section.settings.border_thickness}}px solid {{ section.settings.border_color }};
+    object-fit: cover;
+  }
+
+  .st_img-text-image-usp-box--{{ section.id }} {
+    padding: 20px;
+    border-width: {{ section.settings.box_border_width }}px;
+  border-color: {{ section.settings.box_border_color }};
+    border-style: dotted;
+    background: {{ section.settings.box_hintergrund }};
+  }
+  .st_img-text-image-usp-wrapper--{{ section.id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .st_img-text-image-usp-item--{{ section.id }} {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .st_img-text-image-usp-item-image--{{ section.id }} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    max-width: 20px;
+    max-height: 20px;
+  }
+
+  .st_img-text-image-usp-item-text--{{ section.id }} p{
+    color: {{ section.settings.box_text }};
+    font-family: {{ benefits_font.family }}, {{ benefits_font.fallback_families }} !important;
+    font-size: {{ section.settings.benefits_fontsize }}px;
+    font-weight: {{ benefits_font.weight }};
+  }
+
+  .st_img-text-image-usp-item-text--{{ section.id }} b{
+    font-weight: {{ benefits_font_bolder.weight }} !important;
+  }
+
+  @media only screen and (max-width: 1024px) {
+    .st_img-text-image--{{ section.id }} img:first-child {
+      border-radius: 0px;
+    }
+
+    .st_img-text-image--{{ section.id }} {
+      width: 100%;
+      max-height: {{section.settings.image_max_height_mobile}}px;
+    }
+    .st_img-text-text--{{ section.id }} {
+      width: 100%;
+    }
+    .st_img-text-wrapper--{{ section.id }} {
+      flex-direction: column-reverse;
+      gap: {%  if section.settings.show_zoomed_image %} 60px {% else %} 15px {% endif %};
+      padding-inline: 0px;
+    }
+    .st_img-text-text--{{ section.id }} {
+      padding: 0 20px;
+    }
+    .st_img-text-image-floating--{{ section.id }} {
+      left: 5%;
+      bottom: -40px;
+      width: 120px;
+      height: 120px;
+    }
+    .st_img-text-text-title--{{ section.id }} h2 {
+      font-size: {{ section.settings.title_fontsize | minus: 5 }}px;
+    }
+    .st_img-text-text-title--{{ section.id }} h3 {
+      font-size: {{ section.settings.sub_titel | minus: 2 }}px;
+    }
+    .st_img-text-text--{{ section.id }} p {
+      font-size: {{ section.settings.text_fontsize | minus: 1 }}px;
+    }
+    .st_img-text-image-usp-item-text--{{ section.id }} p{
+      font-size: {{ section.settings.benefits_fontsize | minus: 1 }}px;
+    }
+  }
+</style>
+
+<div class="st_wrapper st_check-section--{{ section.id }}">
+  <div class="st_img-text-wrapper--{{ section.id }}">
+    <div class="st_img-text-text--{{ section.id }}">
+      <div class="st_img-text-text-title--{{ section.id }}">
+        <h3>{{ section.settings.titel }}</h3>
+        <h2>{{ section.settings.sub_titel }}</h2>
+      </div>
+      {{ section.settings.text }}
+      {% if section.blocks.size > 0 %}
+        <div class="st_img-text-image-usp-box--{{ section.id }}">
+          <div class="st_img-text-image-usp-wrapper--{{ section.id }}">
+            {%- for block in section.blocks -%}
+              {%- case block.type -%}
+                {%- when 'vorteil' -%}
+                  <div class="st_img-text-image-usp-item--{{ section.id }}">
+                    <div class="st_img-text-image-usp-item-image--{{ section.id }}">
+                      {% if block.settings.icon %}
+                        <img src="{{ block.settings.icon | image_url: width: "20" }}">
+                      {% else %}
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="100pt"
+                          height="100pt"
+                          viewBox="0 0 100 100"
+                          version="1.1"
+                        >
+                          <g id="#000000fe">
+                          <path fill="#000000" opacity="1.00" d=" M 47.65 0.00 L 51.20 0.00 C 53.01 1.14 54.61 3.35 53.36 5.49 C 52.20 7.86 49.23 7.43 47.06 7.71 C 33.06 8.40 19.95 16.92 13.08 29.05 C 7.49 38.81 6.01 50.84 9.18 61.64 C 12.46 73.44 21.21 83.52 32.33 88.60 C 41.94 93.05 53.22 93.69 63.26 90.33 C 78.28 85.51 90.02 71.66 92.01 55.97 C 92.62 53.18 91.82 49.90 93.47 47.46 C 95.38 45.16 98.43 46.56 100.00 48.47 L 100.00 52.31 C 99.31 66.76 92.08 80.72 80.58 89.52 C 72.72 95.71 62.95 99.23 53.00 100.00 L 47.23 100.00 C 33.17 99.13 19.58 92.20 10.88 81.08 C 4.45 73.14 0.78 63.18 0.00 53.02 L 0.00 47.23 C 0.72 36.49 4.80 25.98 11.80 17.78 C 20.61 7.22 33.92 0.68 47.65 0.00 Z"/>
+                          <path fill="#000000" opacity="1.00" d=" M 90.79 14.66 C 92.09 13.33 93.95 11.82 95.91 12.84 C 98.36 13.83 99.16 17.33 97.00 19.05 C 81.24 34.93 65.34 50.70 49.49 66.49 C 48.01 68.34 45.00 68.44 43.53 66.52 C 37.86 60.50 32.36 54.32 26.68 48.30 C 25.37 46.72 23.38 45.21 23.72 42.90 C 24.29 40.16 28.09 38.61 30.06 40.92 C 35.74 46.71 41.01 52.90 46.64 58.74 C 61.31 44.00 76.10 29.38 90.79 14.66 Z"/>
+                          </g>
+                        </svg>
+                      {% endif %}
+                    </div>
+                    <span class="st_img-text-image-usp-item-text--{{ section.id }}">
+                      {{ block.settings.text }}
+                    </span>
+                  </div>
+              {%- endcase -%}
+            {%- endfor -%}
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    <div class="st_img-text-image--{{ section.id }}">
+      {% if section.settings.bild %}
+        <img style="width:100%" src="{{ section.settings.bild | image_url: width: "900" }}">
+      {% else %}
+        <img style="width:100%" src="https://placehold.co/600x400">
+      {% endif %}
+
+      {% if section.settings.show_zoomed_image %}
+        {% if section.settings.gezoomtes_bild %}
+          <img
+            class="st_img-text-image-floating--{{ section.id }}"
+            src="{{ section.settings.gezoomtes_bild | image_url: width: "400" }}"
+          >
+        {% else %}
+          <img
+            class="st_img-text-image-floating--{{ section.id }}"
+            src="https://placehold.co/400x400"
+          >
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "💫: Image and Text",
+  "class": "section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "⚠️ Important ⚠️",
+      "info": "Please ensure that Sternify [App Extensions](https://www.sternify.com/app-extentions) are activated."
+    },
+    {
+      "type": "select",
+      "id": "bild_position",
+      "label": "Image Position",
+      "options": [
+        {
+          "value": "links",
+          "label": "Left"
+        },
+        {
+          "value": "rechts",
+          "label": "Right"
+        }
+      ],
+      "default": "rechts"
+    },
+    {
+      "type": "image_picker",
+      "id": "bild",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image Roundness",
+      "info": "Desktop only",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Zoomed Image Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_zoomed_image",
+      "label": "Show Zoomed Image",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "gezoomtes_bild",
+      "label": "Zoomed Image"
+    },
+    {
+      "type": "text",
+      "id": "titel",
+      "label": "Title",
+      "default": "Limited Edition"
+    },
+    {
+      "type": "text",
+      "id": "sub_titel",
+      "label": "Subtitle",
+      "default": "Perfect Fit"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "default": "<p>Sternify is fantastic. It has extremely improved my conversion rate and brought my product page to a level with industry experts, all without developers! Everything in the Shopify Theme Builder.</p>",
+      "label": "Text"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top Margin",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom Margin",
+      "min": -50,
+      "max": 50,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Desktop Size Settings"
+    },
+    {
+      "type": "range",
+      "id": "maximal_width",
+      "label": "Maximum Section Width - Desktop",
+      "info": "Desktop only",
+      "min": 100,
+      "max": 200,
+      "step": 10,
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Maximum Image Width - Desktop",
+      "min": 0,
+      "max": 70,
+      "step": 10,
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Mobile Size Settings"
+    },
+    {
+      "type": "range",
+      "id": "image_max_height_mobile",
+      "label": "Maximum Image Height - Mobile",
+      "info": "Mobile only",
+      "min": 300,
+      "max": 600,
+      "step": 10,
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "titel_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitel_color",
+      "label": "Subtitle Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "textblock_color",
+      "label": "Text Block Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "box_hintergrund",
+      "label": "Benefits Box Background",
+      "default": "#F2F2F2"
+    },
+    {
+      "type": "color",
+      "id": "box_text",
+      "label": "Benefits Box Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "box_border_color",
+      "label": "Benefits Box Border Color",
+      "default": "#d3d8d6"
+    },
+    {
+      "type": "range",
+      "id": "box_border_width",
+      "label": "Benefits Box Border Width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color (Zoomed Image)",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border Thickness (Zoomed Image)",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Font Settings"
+    },
+    {
+      "type": "font_picker",
+      "id": "subtitle_font",
+      "label": "Subtitle",
+      "default": "poppins_n3"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_fontsize",
+      "label": "Size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "default": 20
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title",
+      "default": "poppins_n6"
+    },
+    {
+      "type": "range",
+      "id": "title_fontsize",
+      "label": "Size",
+      "min": 10,
+      "max": 45,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "font_picker",
+      "id": "text_font",
+      "label": "Text Block",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "range",
+      "id": "text_fontsize",
+      "label": "Size",
+      "min": 10,
+      "max": 25,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "font_picker",
+      "id": "benefits_font",
+      "label": "Benefits Font",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "range",
+      "id": "benefits_fontsize",
+      "label": "Size",
+      "min": 10,
+      "max": 25,
+      "step": 1,
+      "default": 16
+    }
+  ],
+  "blocks": [
+    {
+      "name": "benefit",
+      "type": "vorteil",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "default": "<p>Your <b>Super</b> Benefit</p>",
+          "label": "Text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "💫: Image and Text",
+      "blocks": [
+        {
+          "type": "vorteil"
+        },
+        {
+          "type": "vorteil"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

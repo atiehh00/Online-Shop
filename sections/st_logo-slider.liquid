@@ -1,0 +1,864 @@
+{% comment %} Version: 1.0.1 {% endcomment %}
+
+{% comment %}
+  ---------------------------------------------------------
+  Copyright © 2024 Sternify. All rights reserved.
+  Any unauthorized reproduction, alteration, or distribution
+  of this code, in part or in whole, is expressly forbidden.
+  Violators will be subject to legal prosecution to the maximum
+  extent permitted by law. For permissions or inquiries,
+  please contact us in our discord server: https://discord.gg/NHHCEPhsG8
+  ---------------------------------------------------------
+{% endcomment %}
+
+<script
+  src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/verifier.js"
+  data-section-id="{{ section.id }}"
+  defer
+></script>
+
+<div class="st_not-found"></div>
+
+<style>
+  .st_logo-slider-outer--{{ section.id }} {
+    width: 100%;
+    background-color: {{ section.settings.section_background_color }};
+  }
+
+  .st_logo-slider-wrapper--{{ section.id }} {
+    padding: {{ section.settings.space_from_top }}px 15px {{ section.settings.space_from_bottom }}px;
+  }
+
+  .st_logo-slider-padding--{{ section.id }} {
+    max-width: {{ section.settings.section_max_width }}px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .st_logo-slider-container--{{ section.id }} {
+    {% if section.settings.box_enabled %}
+      background-color: {{ section.settings.box_background_color }};
+      border-radius: {{ section.settings.border_radius }}px;
+      padding: {{ section.settings.content_padding }}px;
+    {% endif %}
+  }
+
+  .st_logo-slider-content--{{ section.id }} {
+    display: flex;
+    {% case section.settings.layout %}
+      {% when 'title_top' %}
+        flex-direction: column;
+        text-align: center;
+      {% when 'title_left' %}
+        flex-direction: row;
+        align-items: center;
+      {% when 'title_right' %}
+        flex-direction: row-reverse;
+        align-items: center;
+      {% when 'title_bottom' %}
+        flex-direction: column-reverse;
+        text-align: center;
+      {% when 'no_title' %}
+        flex-direction: column;
+    {% endcase %}
+    gap: {{ section.settings.content_gap }}px;
+  }
+
+  .st_logo-slider-title-container--{{ section.id }} {
+    {% case section.settings.layout %}
+      {% when 'title_left' or 'title_right' %}
+        flex: 1;
+        padding-right: 20px;
+        padding-left: 20px;
+      {% else %}
+        width: 100%;
+    {% endcase %}
+  }
+
+  {{ section.settings.title_font | font_face: font_display: 'swap' }}
+
+  .st_logo-slider-title--{{ section.id }} {
+    font-size: {{ section.settings.title_size }}px;
+    color: {{ section.settings.title_color }};
+    line-height: {{ section.settings.title_line_height }};
+    margin: 0;
+    {% if section.settings.title_font %}
+      font-family: {{ section.settings.title_font.family }}, {{ section.settings.title_font.fallback_families }};
+      font-weight: {{ section.settings.title_font.weight }};
+    {% endif %}
+  }
+
+  {{ section.settings.description_font | font_face: font_display: 'swap' }}
+
+  .st_logo-slider-description--{{ section.id }}, .st_logo-slider-description * {
+    font-size: {{ section.settings.description_size }}px;
+    color: {{ section.settings.description_color }};
+    line-height: {{ section.settings.description_line_height }};
+    margin-top: 10px;
+    {% if section.settings.description_font %}
+      font-family: {{ section.settings.description_font.family }}, {{ section.settings.description_font.fallback_families }};
+      font-weight: {{ section.settings.description_font.weight }};
+    {% endif %}
+  }
+
+  .st_logo-slider-logos--{{ section.id }} {
+    {% case section.settings.layout %}
+      {% when 'title_left' or 'title_right' %}
+        flex: 2;
+      {% else %}
+        width: 100%;
+    {% endcase %}
+    position: relative;
+    overflow: hidden;
+  }
+
+  .st_logo-slider-logos--{{ section.id }}::before,
+  .st_logo-slider-logos--{{ section.id }}::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 80px;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .st_logo-slider-logos--{{ section.id }}::before {
+    left: 0;
+    {% if section.settings.box_enabled %}
+      background: linear-gradient(to right,
+        {{ section.settings.box_background_color }} 0%,
+        {{ section.settings.box_background_color }} 20%,
+        {{ section.settings.box_background_color | color_modify: 'alpha', 0 }} 100%
+      );
+    {% else %}
+      background: linear-gradient(to right,
+        {{ section.settings.section_background_color }} 0%,
+        {{ section.settings.section_background_color }} 20%,
+        {{ section.settings.section_background_color | color_modify: 'alpha', 0 }} 100%
+      );
+    {% endif %}
+  }
+
+  .st_logo-slider-logos--{{ section.id }}::after {
+    right: 0;
+    {% if section.settings.box_enabled %}
+      background: linear-gradient(to left,
+        {{ section.settings.box_background_color }} 0%,
+        {{ section.settings.box_background_color }} 20%,
+        {{ section.settings.box_background_color | color_modify: 'alpha', 0 }} 100%
+      );
+    {% else %}
+      background: linear-gradient(to left,
+        {{ section.settings.section_background_color }} 0%,
+        {{ section.settings.section_background_color }} 20%,
+        {{ section.settings.section_background_color | color_modify: 'alpha', 0 }} 100%
+      );
+    {% endif %}
+  }
+
+  .st_logo-slider-track--{{ section.id }} {
+    display: flex;
+    animation: st_slide-{{ section.id }} {{ section.settings.scroll_speed }}s linear infinite;
+    width: max-content;
+    will-change: transform;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+  }
+
+  .st_logo-slider-track--{{ section.id }}.st_slider-initialized {
+    animation-play-state: running;
+  }
+
+  {% if section.settings.pause_on_hover %}
+  .st_logo-slider-track--{{ section.id }}:hover {
+    animation-play-state: paused;
+  }
+  {% endif %}
+
+  @keyframes st_slide-{{ section.id }} {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-50%));
+    }
+  }
+
+  .st_logo-slider-item--{{ section.id }} {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 {{ section.settings.logo_padding }}px;
+    min-width: 100px;
+  }
+
+  .st_logo-slider-logo--{{ section.id }} {
+    {% if section.settings.grayscale_effect %}
+      filter: grayscale(100%);
+      opacity: 0.7;
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    {% endif %}
+  }
+
+  {% if section.settings.grayscale_effect %}
+  .st_logo-slider-logo--{{ section.id }}:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+  }
+  {% endif %}
+
+  @media screen and (max-width: 768px) {
+    .st_logo-slider-content--{{ section.id }} {
+      {% case section.settings.mobile_layout %}
+        {% when 'stack' %}
+          flex-direction: column;
+          text-align: center;
+        {% when 'title_top' %}
+          flex-direction: column;
+          text-align: center;
+        {% when 'title_bottom' %}
+          flex-direction: column-reverse;
+          text-align: center;
+      {% endcase %}
+    }
+
+    .st_logo-slider-title--{{ section.id }} {
+      font-size: {{ section.settings.mobile_title_size }}px;
+    }
+
+    .st_logo-slider-description--{{ section.id }} {
+      font-size: {{ section.settings.mobile_description_size }}px;
+    }
+
+    .st_logo-slider-title-container--{{ section.id }} {
+      padding-right: 0;
+      padding-left: 0;
+      width: 100%;
+    }
+
+    .st_logo-slider-logos--{{ section.id }} {
+      width: 100%;
+    }
+
+    .st_logo-slider-logo--{{ section.id }} {
+      max-width: {{ section.settings.mobile_logo_size }}px !important;
+      max-height: {{ section.settings.mobile_logo_size }}px !important;
+    }
+
+    .st_logo-slider-wrapper--{{ section.id }} {
+      padding: {{ section.settings.space_from_top | times: 0.75 | round }}px 15px {{ section.settings.space_from_bottom | times: 0.75 | round }}px;
+    }
+  }
+</style>
+
+<div class="st_wrapper st_check-section--{{ section.id }}">
+  <div class="st_logo-slider-outer st_logo-slider-outer--{{ section.id }}">
+    <div class="st_logo-slider-wrapper st_logo-slider-wrapper--{{ section.id }}">
+      <div class="st_logo-slider-padding st_logo-slider-padding--{{ section.id }}">
+        <div class="st_logo-slider-container st_logo-slider-container--{{ section.id }}">
+          <div class="st_logo-slider-content st_logo-slider-content--{{ section.id }}">
+            {% if section.settings.layout != 'no_title' %}
+              <div class="st_logo-slider-title-container st_logo-slider-title-container--{{ section.id }}">
+                {% if section.settings.title != blank %}
+                  <div class="st_logo-slider-title st_logo-slider-title--{{ section.id }}">
+                    {{ section.settings.title }}
+                  </div>
+                {% endif %}
+                {% if section.settings.description != blank %}
+                  <div class="st_logo-slider-description st_logo-slider-description--{{ section.id }}">
+                    {{ section.settings.description }}
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="st_logo-slider-logos st_logo-slider-logos--{{ section.id }}">
+              {% assign logo_count = section.blocks | size %}
+
+              {% if logo_count > 0 %}
+                <div class="st_logo-slider-track st_logo-slider-track--{{ section.id }}">
+                  {% for block in section.blocks %}
+                    <div
+                      class="st_logo-slider-item st_logo-slider-item--{{ section.id }}"
+                      {{ block.shopify_attributes }}
+                      data-original
+                    >
+                      {% if block.settings.logo != blank %}
+                        <img
+                          src="{{ block.settings.logo | image_url: width: section.settings.logo_size }}"
+                          alt="{{ block.settings.logo.alt | escape | default: shop.name }}"
+                          width="{{ section.settings.logo_size }}"
+                          height="{{ section.settings.logo_size | divided_by: block.settings.logo.aspect_ratio | round }}"
+                          loading="lazy"
+                          class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                          style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                        >
+                      {% else %}
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0707/3549/5417/files/st_logo-placeholder-black.png?v=1744218134"
+                          alt="Logo placeholder"
+                          width="{{ section.settings.logo_size }}"
+                          height="{{ section.settings.logo_size }}"
+                          loading="lazy"
+                          class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                          style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                        >
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+
+                  {% comment %} Preload a duplicate set to ensure visible content before JS runs {% endcomment %}
+                  {% for block in section.blocks %}
+                    <div class="st_logo-slider-item st_logo-slider-item--{{ section.id }}">
+                      {% if block.settings.logo != blank %}
+                        <img
+                          src="{{ block.settings.logo | image_url: width: section.settings.logo_size }}"
+                          alt="{{ block.settings.logo.alt | escape | default: shop.name }}"
+                          width="{{ section.settings.logo_size }}"
+                          height="{{ section.settings.logo_size | divided_by: block.settings.logo.aspect_ratio | round }}"
+                          loading="lazy"
+                          class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                          style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                        >
+                      {% else %}
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0707/3549/5417/files/st_logo-placeholder-black.png?v=1744218134"
+                          alt="Logo placeholder"
+                          width="{{ section.settings.logo_size }}"
+                          height="{{ section.settings.logo_size }}"
+                          loading="lazy"
+                          class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                          style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                        >
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+
+                  {% if logo_count <= 3 %}
+                    {% comment %} For 1-3 logos, add an extra set for visual fullness before JS loads {% endcomment %}
+                    {% for block in section.blocks %}
+                      <div class="st_logo-slider-item st_logo-slider-item--{{ section.id }}">
+                        {% if block.settings.logo != blank %}
+                          <img
+                            src="{{ block.settings.logo | image_url: width: section.settings.logo_size }}"
+                            alt="{{ block.settings.logo.alt | escape | default: shop.name }}"
+                            width="{{ section.settings.logo_size }}"
+                            height="{{ section.settings.logo_size | divided_by: block.settings.logo.aspect_ratio | round }}"
+                            loading="lazy"
+                            class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                            style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                          >
+                        {% else %}
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0707/3549/5417/files/st_logo-placeholder-black.png?v=1744218134"
+                            alt="Logo placeholder"
+                            width="{{ section.settings.logo_size }}"
+                            height="{{ section.settings.logo_size }}"
+                            loading="lazy"
+                            class="st_logo-slider-logo st_logo-slider-logo--{{ section.id }}"
+                            style="max-width: {{ section.settings.logo_size }}px; max-height: {{ section.settings.logo_size }}px; object-fit: contain;"
+                          >
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="st_logo-slider-placeholder">
+                  <p>Add logo blocks to display logos</p>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Function to initialize the logo slider
+  function initLogoSlider(sectionId) {
+    const trackElement = document.querySelector(`.st_logo-slider-track--${sectionId}`);
+    const containerElement = document.querySelector(`.st_logo-slider-logos--${sectionId}`);
+    const logoCount = parseInt('{{ logo_count }}', 10);
+    const pauseOnHover = {{ section.settings.pause_on_hover | json }};
+    
+    if (logoCount > 0 && trackElement && containerElement) {
+      trackElement.style.animationPlayState = 'paused';
+      
+      function initializeSlider() {
+        const originalLogoItems = trackElement.querySelectorAll(`.st_logo-slider-item--${sectionId}[data-original]`);
+        
+        const existingClones = trackElement.querySelectorAll(`.st_logo-slider-item--${sectionId}:not([data-original])`);
+        existingClones.forEach(clone => clone.remove());
+        
+        const logoSetWidth = Array.from(originalLogoItems).reduce(
+          (total, item) => total + item.offsetWidth, 0
+        );
+        
+        const containerWidth = containerElement.offsetWidth;
+        
+        const minTotalWidth = containerWidth * 3;
+        const setsNeeded = Math.max(4, Math.ceil(minTotalWidth / logoSetWidth));
+        
+        for (let i = 0; i < setsNeeded; i++) {
+          originalLogoItems.forEach(logoItem => {
+            const clone = logoItem.cloneNode(true);
+            clone.removeAttribute('data-original');
+            trackElement.appendChild(clone);
+          });
+        }
+        
+        if (logoCount > 1) {
+          for (let i = 0; i < Math.ceil(logoCount / 2); i++) {
+            const clone = originalLogoItems[i].cloneNode(true);
+            clone.removeAttribute('data-original');
+            trackElement.appendChild(clone);
+          }
+        }
+        
+        const baseSpeed = {{ section.settings.scroll_speed }};
+        
+        let adjustedSpeed;
+        if (logoCount <= 2) {
+          adjustedSpeed = baseSpeed * 0.75;
+        } else {
+          adjustedSpeed = Math.max(
+            baseSpeed,
+            Math.min(baseSpeed * 2.5, baseSpeed * (logoSetWidth / 400))
+          );
+        }
+        
+        trackElement.style.animationDuration = adjustedSpeed + 's';
+        
+        setTimeout(() => {
+          trackElement.style.animationPlayState = 'running';
+          trackElement.classList.add('st_slider-initialized');
+          
+          if (pauseOnHover) {
+            trackElement.addEventListener('mouseenter', function() {
+              this.style.animationPlayState = 'paused';
+            });
+            
+            trackElement.addEventListener('mouseleave', function() {
+              this.style.animationPlayState = 'running';
+            });
+          }
+        }, 50);
+      }
+      
+      const allImages = trackElement.querySelectorAll('img');
+      let loadedImages = 0;
+      const totalImages = allImages.length;
+      
+      if (totalImages === 0) {
+        setTimeout(initializeSlider, 100);
+      } else {
+        allImages.forEach(img => {
+          if (img.complete) {
+            loadedImages++;
+            if (loadedImages === totalImages) {
+              initializeSlider();
+            }
+          } else {
+            img.addEventListener('load', () => {
+              loadedImages++;
+              if (loadedImages === totalImages) {
+                initializeSlider();
+              }
+            });
+            
+            img.addEventListener('error', () => {
+              loadedImages++;
+              if (loadedImages === totalImages) {
+                initializeSlider();
+              }
+            });
+          }
+        });
+        
+        // Fallback initialization after a timeout
+        setTimeout(initializeSlider, 1000);
+      }
+      
+      // Handle window resize
+      let resizeTimer;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        trackElement.style.animationPlayState = 'paused';
+        resizeTimer = setTimeout(initializeSlider, 200);
+      });
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    initLogoSlider('{{ section.id }}');
+  });
+  
+  // Re-initialize when the section is reloaded by Shopify
+  document.addEventListener('shopify:section:load', function(event) {
+    // Check if this is our section
+    if (event.detail.sectionId === '{{ section.id }}') {
+      initLogoSlider(event.detail.sectionId);
+    }
+  });
+  
+  // Re-initialize when the section is rerendered by Shopify editor
+  document.addEventListener('shopify:section:rerender', function(event) {
+    // Check if this is our section
+    if (event.detail.sectionId === '{{ section.id }}') {
+      initLogoSlider(event.detail.sectionId);
+    }
+  });
+  
+  // Handle block select/deselect in the theme editor
+  document.addEventListener('shopify:block:select', function(event) {
+    const trackElement = document.querySelector(`.st_logo-slider-track--{{ section.id }}`);
+    if (trackElement) {
+      // Pause animation when a block is selected in the editor
+      trackElement.style.animationPlayState = 'paused';
+    }
+  });
+  
+  document.addEventListener('shopify:block:deselect', function(event) {
+    const trackElement = document.querySelector(`.st_logo-slider-track--{{ section.id }}`);
+    if (trackElement && trackElement.classList.contains('st_slider-initialized')) {
+      // Resume animation when a block is deselected in the editor
+      trackElement.style.animationPlayState = 'running';
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "💫: Logo Slider",
+  "class": "st_section",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "label": "Content Spacing",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "info": "Space between title and logo slider"
+    },
+    {
+      "type": "color",
+      "id": "section_background_color",
+      "label": "Section Background Color",
+      "default": "#ffffff",
+      "info": "Background color for the entire section"
+    },
+    {
+      "type": "checkbox",
+      "id": "box_enabled",
+      "label": "Enable Box Style",
+      "default": false,
+      "info": "Apply background color and border radius to the content box"
+    },
+    {
+      "type": "color",
+      "id": "box_background_color",
+      "label": "Box Background Color",
+      "default": "#f8f8f8",
+      "info": "Background color for the content box (when box style is enabled)"
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "label": "Section Max Width",
+      "min": 800,
+      "max": 1600,
+      "step": 50,
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "space_from_top",
+      "label": "Space from Top",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "space_from_bottom",
+      "label": "Space from Bottom",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content Padding",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "info": "Padding inside the container (when box style is enabled)"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop Layout",
+      "options": [
+        {
+          "value": "title_top",
+          "label": "Title on top, Logos below"
+        },
+        {
+          "value": "title_left",
+          "label": "Title on left, Logos on right"
+        },
+        {
+          "value": "title_right",
+          "label": "Title on right, Logos on left"
+        },
+        {
+          "value": "title_bottom",
+          "label": "Title on bottom, Logos above"
+        },
+        {
+          "value": "no_title",
+          "label": "Logos only (no title)"
+        }
+      ],
+      "default": "title_top"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile Layout",
+      "options": [
+        {
+          "value": "stack",
+          "label": "Stack (follow desktop layout)"
+        },
+        {
+          "value": "title_top",
+          "label": "Title on top, Logos below"
+        },
+        {
+          "value": "title_bottom",
+          "label": "Title on bottom, Logos above"
+        }
+      ],
+      "default": "stack"
+    },
+    {
+      "type": "header",
+      "content": "Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Our Partners"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Trusted by leading brands around the world</p>"
+    },
+    {
+      "type": "font_picker",
+      "id": "title_font",
+      "label": "Title Font",
+      "default": "inter_n7"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Font Size",
+      "min": 20,
+      "max": 60,
+      "step": 2,
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "title_line_height",
+      "label": "Title Line Height",
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "label": "Mobile Title Font Size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "font_picker",
+      "id": "description_font",
+      "label": "Description Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description Font Size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "description_line_height",
+      "label": "Description Line Height",
+      "min": 1.0,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.5
+    },
+    {
+      "type": "range",
+      "id": "mobile_description_size",
+      "label": "Mobile Description Font Size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Logo Settings"
+    },
+    {
+      "type": "range",
+      "id": "logo_size",
+      "label": "Logo Size (Desktop)",
+      "min": 50,
+      "max": 300,
+      "step": 10,
+      "default": 100,
+      "info": "Maximum width and height for logos on desktop"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_size",
+      "label": "Logo Size (Mobile)",
+      "min": 40,
+      "max": 200,
+      "step": 10,
+      "default": 60,
+      "info": "Maximum width and height for logos on mobile devices"
+    },
+    {
+      "type": "range",
+      "id": "logo_padding",
+      "label": "Logo Horizontal Spacing",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 45,
+      "info": "Horizontal space between logos"
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll Speed (seconds)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "info": "Higher values = slower scrolling"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on Hover",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "grayscale_effect",
+      "label": "Grayscale Effect (color on hover)",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Logo",
+      "type": "logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo Image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "💫: Logo Slider",
+      "blocks": [
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        },
+        {
+          "type": "logo"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

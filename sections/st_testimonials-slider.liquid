@@ -1,0 +1,848 @@
+{% comment %} Version: 2.3.1 {% endcomment %}
+
+{% comment %}
+  ---------------------------------------------------------
+  Copyright © 2024 Sternify. All rights reserved.
+  Any unauthorized reproduction, alteration, or distribution
+  of this code, in part or in whole, is expressly forbidden.
+  Violators will be subject to legal prosecution to the maximum
+  extent permitted by law. For permissions or inquiries,
+  please contact us in our discord server: https://discord.gg/NHHCEPhsG8
+  ---------------------------------------------------------
+{% endcomment %}
+
+<script
+  src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/verifier.js?v=1717092340"
+  data-section-id="{{ section.id }}"
+  defer
+></script>
+
+<div class="st_not-found"></div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+{% case section.settings.stil %}
+  {% when 'standard' %}
+    {% assign background_gradient = 'linear-gradient(180deg, '
+      | append: section.settings.gradient_start_color
+      | append: ', rgb(230 230 230 / 99%) 150%)'
+    %}
+  {% when 'trustpilot' %}
+    {% assign background_gradient = 'linear-gradient(180deg, '
+      | append: section.settings.gradient_start_color
+      | append: ', rgb(0 182 122 / 20%) 150%)'
+    %}
+  {% when 'google' %}
+    {% assign background_gradient = 'linear-gradient(180deg, '
+      | append: section.settings.gradient_start_color
+      | append: ', rgb(255 252 240 / 99%) 150%)'
+    %}
+  {% when 'custom' %}
+    {% capture background_gradient %} linear-gradient(180deg, {{ section.settings.gradient_start_color }}, {{ section.settings.section_backround_color}} 150%){% endcapture %}
+{% endcase %}
+
+<style>
+  {%- assign header_font = section.settings.header_font -%}
+  {%- assign subtitle_font = section.settings.subtitle_font -%}
+  {%- assign review_font = section.settings.review_font -%}
+  {%- assign review_font_bolder = section.settings.review_font | font_modify: 'weight', '+300' -%}
+  {{ header_font | font_face }}
+  {{ subtitle_font | font_face }}
+  {{ review_font | font_face }}
+  {{ review_font_bolder | font_face }}
+
+  section:has(.st_testimonial-wrapper) {
+    padding-inline: 0 !important;
+    margin-inline: 0 !important;
+  }
+
+  .st_testimonial-wrapper .swiper-button-next-sternify.swiper-button-disabled, .st_testimonial-wrapper .swiper-button-prev-sternify.swiper-button-disabled {
+    opacity: .35;
+    cursor: auto;
+    pointer-events: none;
+  }
+  .st_testimonial-wrapper .swiper-button-next-sternify, .st_testimonial-wrapper .swiper-button-prev-sternify {
+    position: absolute;
+    top: var(--swiper-navigation-top-offset,50%);
+    width: 50px;
+    height: 50px;
+    margin-top: -20px;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 50px;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 50%;
+    border: 1px solid #21212117;
+  }
+
+  .st_testimonial-wrapper .swiper-slide {
+    opacity: .7;
+    scale: 0.9;
+    transition: opacity 0.3s ease-in-out, scale 0.5s ease-in-out !important;
+  }
+
+  .st_testimonial-wrapper .swiper-slide-active {
+    opacity: 1;
+    scale: 1;
+    transition: opacity 0.3s ease-in-out, scale 0.5s ease-in-out !important;
+  }
+
+  .st_testimonial-wrapper .swiper-button-next-sternify svg, .swiper-button-prev-sternify svg {
+    width: 50px;
+  }
+
+  .st_testimonial-wrapper .swiper-button-next-sternify {
+    right: 10px;
+    left: auto
+  }
+  .st_testimonial-wrapper .swiper-button-prev-sternify {
+    left: 10px;
+    right: auto
+  }
+  .st_testimonial-wrapper .swiper-scrollbar {
+    display: block !important;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} {
+    display: flex;
+    justify-content: center;
+    padding-block: {{section.settings.box_padding_block}}px;
+    flex-direction: column;
+    background: {{ background_gradient }};
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  }
+
+  .st_testimonial-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding-inline: 10px;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h2 {
+    font-size: 48px;
+    font-weight: 700;
+    text-align: center;
+    color: {{ section.settings.titel_farbe }};
+    font-family: {{ header_font.family }}, {{ header_font.fallback_families }};
+    font-weight: {{ header_font.weight }} !important;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h3 {
+    font-size: 22px;
+    font-weight: 400;
+    text-align: center;
+    color: {{ section.settings.subtitel_farbe }};
+    font-family: {{ subtitle_font.family }}, {{ subtitle_font.fallback_families }};
+    font-weight: {{ subtitle_font.weight }} !important;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h2 {
+      font-size: 36px;
+    }
+
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h3 {
+      font-size: 16px;
+    }
+
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header {
+      padding: 20px;
+    }
+  }
+
+  @media screen and (max-width: 650px) {
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h2 {
+      font-size: 32px;
+      line-height: 1.2;
+    }
+
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header h3 {
+      font-size: 14px;
+    }
+
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header {
+      padding: 20px;
+    }
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox {
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    display: flex !important;
+    flex-direction: column;
+    gap: 10px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+    align-items: flex-start;
+    justify-content: center;
+    background: {{ section.settings.box_hintergrund }};
+  }
+
+  @media screen and (max-width: 650px) {
+    .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox {
+      max-width: 300px;
+    }
+  }
+
+  .st_testimonial-reviewbox-verified-text {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .st_testimonial-reviewbox-verified-text svg {
+    width: 20px;
+    height: 20px;
+    fill: #9e9e9e;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox-verified-text span {
+    font-size: 16px;
+    font-weight: {{ review_font.weight }} !important;
+  }
+
+  .st_testimonial-reviewbox-footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .st_testimonial-reviewbox-user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .st_testimonial-reviewbox-user-info img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .st_testimonial-reviewbox-user-info svg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .st_testimonial-reviewbox-user-info-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox-user-info-text span {
+    color: {{ section.settings.box_text }};
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} span.st_testimonial-reviewbox-user-info-name {
+    font-weight: {{ review_font_bolder.weight }} !important;
+  }
+
+  .st_testimonial-wrapper .swiper-container,
+  .st_testimonial-wrapper swiper-wrapper {
+    width: 100%;
+    height: unset;
+    padding-block: 20px;
+    overflow: hidden;
+    background-color: unset;
+  }
+
+  .st_testimonial-wrapper .swiper-wrapper {
+    align-items: center;
+    flex-direction: row;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header-review {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: {{ subtitle_font.family }}, {{ subtitle_font.fallback_families }};
+    font-weight: {{ subtitle_font.weight }} !important;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header-review span {
+    color: {{ section.settings.review_color }} !important;
+  }
+
+  .st_testimonial-header-review-stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .st_testimonial-reviewbox-rating {
+    display: flex;
+  }
+
+  .st_testimonial-reviewbox-rating svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-header-review .st_testimonial-reviewbox-rating svg {
+    fill: {{ section.settings.star_color_header }}
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox-footer .st_testimonial-reviewbox-rating svg {
+    fill: {{ section.settings.star_color_box }}
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox * {
+    font-family: {{ review_font.family }}, {{ review_font.fallback_families }};
+    font-weight: {{ review_font.weight }} !important;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-button {
+    background: black;
+    width: fit-content;
+    margin: 0 auto;
+    padding: 10px 20px;
+    margin-top: 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: {{ review_font.family }}, {{ review_font.fallback_families }};
+    font-weight: {{ review_font.weight }} !important;
+  }
+
+  .st_testimonial-button span {
+    color: white;
+    font-size: 16px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .st_testimonial-button span {
+      font-size: 12px;
+    }
+  }
+
+  .st_testimonial-button img {
+    max-height: 20px;
+    object-fit: contain;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox p {
+    color: {{ section.settings.box_text }};
+    font-family: {{ review_font.family }}, {{ review_font.fallback_families }};
+    font-weight: {{ review_font.weight }} !important;
+  }
+
+  .st_testimonial-wrapper--{{ section.id }} .st_testimonial-reviewbox b, .st_testimonial-reviewbox strong {
+    color: {{ section.settings.box_text }};
+    font-family: {{ review_font_bolder.family }}, {{ review_font_bolder.fallback_families }};
+    font-weight: {{ review_font_bolder.weight }} !important;
+  }
+
+  .st_testimonial-reviewbox-image {
+    max-width: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+
+  .st_testimonial-reviewbox-user-info-date {
+    font-size: 10px !important;
+  }
+</style>
+
+<div class="st_wrapper st_check-section--{{ section.id }}">
+  <div class="st_testimonial-wrapper st_testimonial-wrapper--{{ section.id }}">
+    <div class="st_testimonial-header">
+      <h2>{{ section.settings.header }}</h2>
+      <h3>{{ section.settings.subheader }}</h3>
+      <div class="st_testimonial-header-review">
+        <span>{{ section.settings.bewertung_text }}</span>
+        <div class="st_testimonial-header-review-stars">
+          <div class="st_testimonial-reviewbox-rating">
+            {% assign num_trustpilot_sterne = section.settings.anzahl_der_bewertungen %}
+            {% case section.settings.stil %}
+              {% when 'standard' %}
+                {% for i in (1..num_trustpilot_sterne) %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#fdd663" viewBox="0 0 256 256">
+                    <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                  </svg>
+                {% endfor %}
+              {% when 'trustpilot' %}
+                {% for i in (1..num_trustpilot_sterne) %}
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/trustpilot_star.svg?v=1711989446"
+                    alt="Trustpilot Star"
+                  >
+                {% endfor %}
+              {% when 'google' %}
+                {% for i in (1..num_trustpilot_sterne) %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#fdd663" viewBox="0 0 256 256">
+                    <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                  </svg>
+                {% endfor %}
+              {% when 'custom' %}
+                {% for i in (1..num_trustpilot_sterne) %}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#fdd663" viewBox="0 0 256 256">
+                    <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                  </svg>
+                {% endfor %}
+            {% endcase %}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="swiper swiper-container" data-autoplay="{{ section.settings.slider_autoplay }}">
+      <!-- Additional required wrapper -->
+      <div class="swiper-wrapper">
+        <!-- Slides -->
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+            {%- when 'bewertung' -%}
+              <div class="swiper-slide st_testimonial-reviewbox">
+                {% if block.settings.review_image %}
+                  <style>
+                    .st_testimonial-reviewbox-image--{{ block.id }} {
+                      height: {{ block.settings.max_image_height }}px;
+                      object-position: {{ block.settings.image_position }};
+                    }
+
+                    @media screen and (min-width: 1024px) {
+                      .st_testimonial-reviewbox-image--{{ block.id }} {
+                        height: {{ block.settings.max_image_height | plus: 80 }}px;
+                      }
+                    }
+                  </style>
+                  <img
+                    class="st_testimonial-reviewbox-image st_testimonial-reviewbox-image--{{ block.id }}"
+                    src="{{ block.settings.review_image | img_url: '400x' }}"
+                  >
+                {% endif %}
+                {{ block.settings.bewertung_text }}
+                {%- if block.settings.verifizierte_bewertung -%}
+                  <div class="st_testimonial-reviewbox-verified-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+                      <path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34Z"></path>
+                    </svg>
+                    <span>{{ section.settings.verified_text }}</span>
+                  </div>
+                {%- endif -%}
+                <div class="st_testimonial-reviewbox-footer">
+                  <div class="st_testimonial-reviewbox-user-info">
+                    {%- if section.settings.show_avatars -%}
+                      {%- assign nutzer_profilbild = block.settings.nutzer_profilbild -%}
+                      {%- if nutzer_profilbild -%}
+                        <img
+                          src="{{ nutzer_profilbild | image_url: width: nutzer_profilbild.width }}"
+                          alt="User Image"
+                        >
+                      {%- else -%}
+                        <img
+                          src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/profile-pic-3.png?v=1711989842"
+                          alt="User Image"
+                        >
+                      {%- endif -%}
+                    {%- endif -%}
+                    <div class="st_testimonial-reviewbox-user-info-text">
+                      <span class="st_testimonial-reviewbox-user-info-name">{{ block.settings.nutzer_name }}</span>
+                      <span class="st_testimonial-reviewbox-user-info-date">{{ block.settings.datum }}</span>
+                    </div>
+                  </div>
+
+                  {% assign num = block.settings.anzahl_der_sterne %}
+                  <div class="st_testimonial-reviewbox-rating">
+                    {% for i in (1..num) %}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="32"
+                        height="32"
+                        fill="#000000"
+                        viewBox="0 0 256 256"
+                      >
+                        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"></path>
+                      </svg>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+      <!-- If we need pagination -->
+      <div class="swiper-pagination"></div>
+
+      <div class="swiper-button-next-sternify">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+          <path d="M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z"></path>
+        </svg>
+      </div>
+      <div class="swiper-button-prev-sternify">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256">
+          <path d="M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z"></path>
+        </svg>
+      </div>
+
+      <!-- If we need scrollbar -->
+      {% comment %} <div class="swiper-scrollbar"></div> {% endcomment %}
+    </div>
+    <a href="{{ section.settings.button_link }}" class="st_testimonial-button">
+      <span> {{ section.settings.button_text }} </span>
+      {% if section.settings.own_logo %}
+        <img
+          src="{{ section.settings.own_logo | image_url: width: "200" }}"
+          alt="Logo"
+        >
+      {% else %}
+        {% case section.settings.stil %}
+          {% when 'standard' %}
+
+          {% when 'trustpilot' %}
+            <img
+              src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/trustpilot-logo-white.png?v=1711992252"
+              alt="trustpilot-logo"
+            >
+          {% when 'google' %}
+            <img
+              src="https://cdn.shopify.com/s/files/1/0799/5880/2740/files/Google_2015_logo_1.png?v=1714586033"
+              alt="google-logo"
+            >
+        {% endcase %}
+      {% endif %}
+    </a>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "💫: Testimonials Slider",
+  "tag": "div",
+  "settings": [
+    {
+      "type": "header",
+      "content": "⚠️ Important ⚠️",
+      "info": "Please ensure that Sternify [App Extensions](https://www.sternify.com/app-extentions) are activated."
+    },
+    {
+      "type": "select",
+      "id": "stil",
+      "label": "Style",
+      "options": [
+        {
+          "value": "standard",
+          "label": "Standard"
+        },
+        {
+          "value": "trustpilot",
+          "label": "Trustpilot"
+        },
+        {
+          "value": "google",
+          "label": "Google"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "trustpilot",
+      "info": "Select style"
+    },
+    {
+      "type": "color",
+      "id": "gradient_start_color",
+      "label": "Background Color",
+      "default": "#FFFFFF",
+      "info": "Start color for background gradient"
+    },
+    {
+      "type": "color",
+      "id": "section_backround_color",
+      "label": "Gradient Start Color (only for custom style)",
+      "info": "This setting will only be applied if you selected 'Custom' style.",
+      "default": "#EFEFEF"
+    },
+    {
+      "type": "image_picker",
+      "id": "own_logo",
+      "label": "Optional: Own Logo",
+      "info": "Upload your own logo here if you use other review providers"
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_autoplay",
+      "label": "Slider Autoplay",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top Margin",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom Margin",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "box_padding_block",
+      "label": "Inside Section Spacing Top and Bottom",
+      "info": "Inside the section",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Color Settings"
+    },
+    {
+      "type": "color",
+      "id": "titel_farbe",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subtitel_farbe",
+      "label": "Subtitle Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "box_hintergrund",
+      "label": "Box Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "box_text",
+      "label": "Box Text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "star_color_header",
+      "label": "Stars Header",
+      "default": "#fdd663"
+    },
+    {
+      "type": "color",
+      "id": "star_color_box",
+      "label": "Stars Box",
+      "default": "#1B1B1B"
+    },
+    {
+      "type": "color",
+      "id": "review_color",
+      "label": "Review Text Color",
+      "default": "#000000",
+      "info": "Color for the review text"
+    },
+    {
+      "type": "header",
+      "content": "Texts"
+    },
+    {
+      "type": "text",
+      "id": "header",
+      "label": "Header",
+      "default": "Your Satisfaction. Our Mission.",
+      "placeholder": "Enter header text"
+    },
+    {
+      "type": "text",
+      "id": "subheader",
+      "label": "Sub Header",
+      "default": "See what other customers say",
+      "placeholder": "Enter sub header text"
+    },
+    {
+      "type": "text",
+      "id": "bewertung_text",
+      "label": "Rating Text",
+      "default": "Very Good 4.7/5",
+      "placeholder": "Rating Text"
+    },
+    {
+      "type": "range",
+      "id": "anzahl_der_bewertungen",
+      "label": "Number of Ratings",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "based on 778 ratings",
+      "placeholder": "Button Text"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "text",
+      "id": "verified_text",
+      "label": "Verified Text",
+      "default": "Verified Rating",
+      "info": "Text shown for verified ratings"
+    },
+    {
+      "type": "header",
+      "content": "Font Settings"
+    },
+    {
+      "type": "font_picker",
+      "id": "header_font",
+      "label": "Header Font",
+      "default": "poppins_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "subtitle_font",
+      "label": "Subtitle Font",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "font_picker",
+      "id": "review_font",
+      "label": "Rating Font",
+      "default": "poppins_n4"
+    },
+    {
+      "type": "header",
+      "content": "Avatar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_avatars",
+      "label": "Show Avatar Images",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "name": "Rating",
+      "type": "bewertung",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "bewertung_text",
+          "label": "Rating Text",
+          "default": "<p>\"Sternify is fantastic. It has extremely improved my conversion rate and brought my product page to a level with industry experts, all without developers! Everything in the Shopify Theme Builder.\"</p>"
+        },
+        {
+          "type": "image_picker",
+          "id": "review_image",
+          "label": "Rating Image (Optional)",
+          "info": "Optional"
+        },
+        {
+          "type": "range",
+          "id": "max_image_height",
+          "min": 150,
+          "max": 250,
+          "step": 10,
+          "default": 200,
+          "label": "Maximum Image Height"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image Position",
+          "info": "This setting only affects images that exceed the maximum height",
+          "options": [
+            {
+              "value": "bottom",
+              "label": "Bottom"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "top",
+              "label": "Top"
+            }
+          ],
+          "default": "center"
+        },
+        {
+          "type": "image_picker",
+          "id": "nutzer_profilbild",
+          "label": "User Profile Image"
+        },
+        {
+          "type": "text",
+          "id": "nutzer_name",
+          "label": "User Name",
+          "default": "Max M.",
+          "placeholder": "Max Sample"
+        },
+        {
+          "type": "text",
+          "id": "datum",
+          "label": "Date",
+          "default": "3 days ago",
+          "placeholder": "e.g. on 25.03.2024"
+        },
+        {
+          "type": "range",
+          "id": "anzahl_der_sterne",
+          "label": "Number of Stars",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verifizierte_bewertung",
+          "label": "Verified Rating",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "💫: Testimonials Slider",
+      "blocks": [
+        {
+          "type": "bewertung"
+        },
+        {
+          "type": "bewertung"
+        },
+        {
+          "type": "bewertung"
+        },
+        {
+          "type": "bewertung"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

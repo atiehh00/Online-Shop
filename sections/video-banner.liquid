@@ -1,0 +1,112 @@
+<style>
+  .hero-video-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .hero-video-container video {
+    width: 100%;
+    height: 120vh;
+    object-fit: cover;
+    object-position: center;
+    transform: scale(1);
+    transition: transform 0.5s ease-out;
+  }
+
+  .hero-video-container.scrolled video {
+    transform: scale(1.08); /* leichtes Zoom beim Scrollen */
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    text-align: center;
+    padding: 2rem;
+    pointer-events: none;
+  }
+
+  .hero-overlay h2 {
+    font-size: 2rem;
+    margin: 0 0 10px;
+    font-weight: 600;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+
+  .hero-overlay p {
+    font-size: 1rem;
+    margin: 0 0 20px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+
+  .hero-overlay a {
+    background-color: white;
+    color: black;
+    padding: 12px 24px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: bold;
+    pointer-events: auto;
+    transition: background 0.3s ease;
+  }
+
+  .hero-overlay a:hover {
+    background-color: #C2956B;
+  }
+
+  @media (max-width: 768px) {
+    .hero-overlay h2 {
+      font-size: 1.5rem;
+    }
+
+    .hero-overlay p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (min-width: 769px) {
+  .hero-overlay {
+    padding-top: 8rem;
+  }
+
+  .searchbar-mockup {
+    font-size: 1.2rem;
+  }
+}
+
+</style>
+
+<div class="hero-video-container" id="luxylab-hero-video">
+  <video autoplay loop muted playsinline>
+    <source src="https://cdn.shopify.com/videos/c/o/v/fcc6c90dd3734a7da242535af21ac7bc.mp4" type="video/mp4">
+    Dein Browser unterstützt dieses Video nicht.
+  </video>
+  <div class="hero-overlay">
+    <h2>50 % Rabatt auf deinen neuen Look</h2>
+    <p>Von Alltagslook zu Glamour – in 5 Minuten</p>
+    <a href="https://www.luxylab.de/collections/unsere-bestseller">Jetzt 50 % sparen</a>
+  </div>
+</div>
+
+<script>
+  window.addEventListener('scroll', function() {
+    const hero = document.getElementById('luxylab-hero-video');
+    if (window.scrollY > 10) {
+      hero.classList.add('scrolled');
+    } else {
+      hero.classList.remove('scrolled');
+    }
+  });
+</script>
